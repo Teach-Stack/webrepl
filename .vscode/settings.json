@@ -18,9 +18,9 @@
   "cSpell.words": [
     "fflate",
     "indexeddb",
-    "pyodide",
     "repls",
     "signaldb",
-    "unocss"
+    "unocss",
+    "webrepl"
   ]
 }

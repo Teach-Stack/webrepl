@@ -1,8 +1,8 @@
-# PyREPL
-PyREPL is a simple web based Python REPL created using the [Pyodide](https://pyodide.org/) WASM Python interpreter.
+# WebREPL
+WebREPL is a simple web based HTML/CSS/JS REPL created using service workers.
 
 ## How
-By using Pyodide there is no need server/backend for running any code, it is all done in the client's browser. This reduces complexity and make's it super portable. 
+By using service workers there is no need server/backend for running any code, it is all done in the client's browser. This reduces complexity and make's it super portable. 
 
 Code is stored locally in your browser using IndexedDB, so it persists between visits and never leaves your device. 
 
@@ -14,10 +14,5 @@ I primarily developed this for my own classroom when I teach a small Python foun
 I also personally want to quickly just test/share some Python code and I couldn't find a solution that fit my use case.
 
 ## Current Limitations
-- Single file only
-- No 3rd party packages
-- [Pyodide Python compatibility](https://pyodide.org/en/stable/usage/wasm-constraints.html)
-
-## Acknowledgements
-- The amazing [Pyodide](https://github.com/pyodide) team who without their WASM port of CPython none of this would be possible
-- [Vue's REPL](https://github.com/vuejs/repl), which was the final piece of the puzzle to make the app as portable as possible
+- Simple file structures only
+- No uploading of assets

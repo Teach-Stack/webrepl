@@ -24,16 +24,16 @@ $effect(() => {
 
 <Dialog bind:open>
   <div class="flex flex-col gap-4">
-    <h1 class="text-center text-2xl font-sans text-slate-8">Welcome to PyREPL</h1>
+    <h1 class="text-center text-2xl font-sans text-slate-8">Welcome to WebREPL</h1>
 
     <p class="text-slate-7 text-base leading-relaxed">
-      PyREPL is a web-based Python REPL environment that runs entirely in your browser using WebAssembly.
+      WebREPL is a web-based HTML/CSS/JS environment that runs entirely in your browser.
     </p>
 
     <div class="flex flex-col gap-3">
       <h2 class="text-lg font-sans text-slate-8">Key Features:</h2>
       <ul class="text-slate-7 text-base leading-relaxed list-disc pl-5 space-y-2">
-        <li>Write and execute Python code instantly</li>
+        <li>Write and execute HTML/CSS/JS code instantly</li>
         <li>Multiple REPL sessions with persistent storage</li>
         <li>Share code snippets via URL</li>
         <li>No server, no login - Your code stays on your device</li>

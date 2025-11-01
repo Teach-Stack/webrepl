@@ -12,7 +12,7 @@ let sharedName = $derived(page.url.searchParams.get('name'))
   <div class="flex items-center gap-2 md:gap-5 overflow-hidden">
     <div class="flex flex-col">
       <h1 class="text-lg md:text-2xl font-bold font-sans leading-tight">
-        PyREPL
+        WebREPL
       </h1>
       <p class="text-xs font-mono text-slate-6 text-center">v{PKG.version}</p>
     </div>
@@ -32,7 +32,7 @@ let sharedName = $derived(page.url.searchParams.get('name'))
     {/if}
   </div>
   <Button
-    href="https://github.com/justinforlenza/pyrepl"
+    href="https://github.com/justinforlenza/webrepl"
     target="_blank"
     aria-label="view source code"
     title="View Source Code"

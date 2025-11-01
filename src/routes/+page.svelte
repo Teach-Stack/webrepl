@@ -19,7 +19,7 @@ $effect(() => {
     try {
       const code = atou(sharedCode)
       if (code !== editor.value) {
-        console.debug('[pyrepl] loading shared code from url')
+        console.debug('[webrepl] loading shared code from url')
         setTimeout(() => {
           editor.value = code
           editor.readOnly = true
@@ -28,12 +28,12 @@ $effect(() => {
     } catch (e) {
       // @ts-expect-error error type unknown
       if (e.name === 'InvalidCharacterError') {
-        console.warn('[pyrepl] invalid shared code in url')
+        console.warn('[webrepl] invalid shared code in url')
       }
     }
   } else if (repls.ready && lastLoadedId !== repls.currentReplId) {
     lastLoadedId = repls.currentReplId ?? ''
-    console.debug('[pyrepl] loading code from indexedb')
+    console.debug('[webrepl] loading code from indexedb')
     editor.value = repls.getCurrentRepl()?.code ?? ''
   }
 })
@@ -42,9 +42,9 @@ $effect(() => {
   if (repls.ready && !editor.readOnly) {
     const currentRepl = repls.getCurrentRepl()
     if (currentRepl === undefined) {
-      console.warn('[pyrepl] unable to find current repl')
+      console.warn('[webrepl] unable to find current repl')
     } else if (editor.value !== currentRepl.code) {
-      console.debug('[pyrepl] updating code in indexedb')
+      console.debug('[webrepl] updating code in indexedb')
       repls.updateCurrentRepl(editor.value)
     }
   }
@@ -54,7 +54,7 @@ $effect(() => {
 <svelte:window onresize={terminal.resize} />
 
 <svelte:head>
-  <title>PyREPL - Web Based Python Environment</title>
+  <title>WebREPL - Web Based Python Environment</title>
 </svelte:head>
 <Welcome />
 <main
