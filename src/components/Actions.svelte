@@ -1,23 +1,20 @@
 <script lang="ts">
 import { utoa } from '$lib'
-import { terminal, worker, editor, repls } from '$lib/state'
+import { terminal, editor, repls } from '$lib/state'
 
 import Button from './ui/Button.svelte'
 
-function runPython() {
-  terminal.reset()
-  worker.run(editor.value)
-}
-
 function shareCode() {
-  const hash = utoa(editor.value)
-  const url = new URL(window.location.toString())
-  url.searchParams.set('code', hash)
-  if (repls.ready)
-    url.searchParams.set('name', repls.getCurrentRepl()?.name ?? 'untitled')
+  // TODO: implement share code functionality
+  alert('NOT WORKING')
+  // const hash = utoa(editor.value)
+  // const url = new URL(window.location.toString())
+  // url.searchParams.set('code', hash)
+  // if (repls.ready)
+  //   url.searchParams.set('name', repls.getCurrentRepl()?.name ?? 'untitled')
 
-  navigator.clipboard.writeText(url.toString())
-  alert('Link Copied')
+  // navigator.clipboard.writeText(url.toString())
+  // alert('Link Copied')
 }
 </script>
 <svelte:options runes={true} />
@@ -37,9 +34,9 @@ function shareCode() {
       }}
     >
       {#if terminal.expanded}
-        <div class="i-teenyicons:left-outline size-5.75"></div>
-      {:else}
         <div class="i-teenyicons:right-outline size-5.75"></div>
+      {:else}
+        <div class="i-teenyicons:left-outline size-5.75"></div>
       {/if}
     </Button>
     <Button
@@ -62,15 +59,6 @@ function shareCode() {
     </Button>
   </div>
   <div class="flex gap-4 items-center">
-    <Button
-      variant="green"
-      aria-details="run code"
-      onclick={runPython}
-      loading={worker.running}
-    >
-      Run
-    </Button>
-
     <Button 
       variant="blue"
       aria-details="copy share link to code repl"

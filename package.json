@@ -1,10 +1,10 @@
 {
   "name": "webrepl",
-  "version": "0.3.1",
+  "version": "0.0.0",
   "type": "module",
   "license": "AGPL-3.0-only",
   "scripts": {
-    "dev": "vite dev",
+    "dev": "vite dev --port 5174",
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -36,11 +36,9 @@
     "@signaldb/indexeddb": "^1.1.0",
     "@signaldb/svelte": "^1.1.1",
     "@sveltejs/adapter-static": "^3.0.10",
-    "@xterm/xterm": "^5.5.0",
     "bits-ui": "^2.14.1",
     "fflate": "^0.8.2",
     "nanoid": "^5.1.6",
-    "pyodide": "^0.29.0",
     "svelte-codemirror-editor": "^2.1.0"
   }
 }

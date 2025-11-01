@@ -1,5 +1,5 @@
 <script lang="ts">
-import Terminal from '../components/Terminal.svelte'
+// import Terminal from '../components/Terminal.svelte'
 import Actions from '../components/Actions.svelte'
 import Editor from '../components/Editor.svelte'
 import Header from '../components/Header.svelte'
@@ -14,41 +14,41 @@ let lastLoadedId = $state('')
 
 let sharedCode = $derived(page.url.searchParams.get('code'))
 
-$effect(() => {
-  if (sharedCode !== null) {
-    try {
-      const code = atou(sharedCode)
-      if (code !== editor.value) {
-        console.debug('[webrepl] loading shared code from url')
-        setTimeout(() => {
-          editor.value = code
-          editor.readOnly = true
-        }, 0)
-      }
-    } catch (e) {
-      // @ts-expect-error error type unknown
-      if (e.name === 'InvalidCharacterError') {
-        console.warn('[webrepl] invalid shared code in url')
-      }
-    }
-  } else if (repls.ready && lastLoadedId !== repls.currentReplId) {
-    lastLoadedId = repls.currentReplId ?? ''
-    console.debug('[webrepl] loading code from indexedb')
-    editor.value = repls.getCurrentRepl()?.code ?? ''
-  }
-})
+// $effect(() => {
+//   if (sharedCode !== null) {
+//     try {
+//       const code = atou(sharedCode)
+//       if (code !== editor.value) {
+//         console.debug('[webrepl] loading shared code from url')
+//         setTimeout(() => {
+//           editor.value = code
+//           editor.readOnly = true
+//         }, 0)
+//       }
+//     } catch (e) {
+//       // @ts-expect-error error type unknown
+//       if (e.name === 'InvalidCharacterError') {
+//         console.warn('[webrepl] invalid shared code in url')
+//       }
+//     }
+//   } else if (repls.ready && lastLoadedId !== repls.currentReplId) {
+//     lastLoadedId = repls.currentReplId ?? ''
+//     console.debug('[webrepl] loading code from indexedb')
+//     editor.value = repls.getCurrentRepl()?.code ?? ''
+//   }
+// })
 
-$effect(() => {
-  if (repls.ready && !editor.readOnly) {
-    const currentRepl = repls.getCurrentRepl()
-    if (currentRepl === undefined) {
-      console.warn('[webrepl] unable to find current repl')
-    } else if (editor.value !== currentRepl.code) {
-      console.debug('[webrepl] updating code in indexedb')
-      repls.updateCurrentRepl(editor.value)
-    }
-  }
-})
+// $effect(() => {
+//   if (repls.ready && !editor.readOnly) {
+//     const currentRepl = repls.getCurrentRepl()
+//     if (currentRepl === undefined) {
+//       console.warn('[webrepl] unable to find current repl')
+//     } else if (editor.value !== currentRepl.code) {
+//       console.debug('[webrepl] updating code in indexedb')
+//       repls.updateCurrentRepl(editor.value)
+//     }
+//   }
+// })
 </script>
 
 <svelte:window onresize={terminal.resize} />
@@ -73,7 +73,7 @@ $effect(() => {
   <Editor />
   {/if}
 
-  <Terminal />
+  <!-- <Terminal /> -->
 </main>
 
 <style>
