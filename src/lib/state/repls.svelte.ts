@@ -1,27 +1,224 @@
-import { REPLCollection, type REPL } from '$lib/db.svelte'
+import { REPLCollection, type Directory, type REPL } from '$lib/db.svelte'
 import { nanoid } from 'nanoid'
+
+const BASE_HTML = `<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <link rel="stylesheet" href="/styles.css">
+      <title>Document</title>
+  </head>
+  <body>
+    <p>Hello World</p>
+  </body>
+</html>`
+
+const BASE_CSS = `body {
+  font-family: sans-serif;
+}`
 
 class REPLState {
   store: REPLCollection = new REPLCollection()
 
   ready: boolean = $state(false)
 
-  currentReplId: string | null = $state(localStorage.getItem('currentRepl'))
+  currentReplId: string | null = $state(null)
 
   setCurrentId(id: string) {
     this.currentReplId = id
-    localStorage.setItem('currentRepl', id)
+    cookieStore.set('currentRepl', id)
+    // localStorage.setItem('currentRepl', id)
   }
 
   getCurrentRepl() {
+    if (this.currentReplId === null || !this.ready) return
     return this.store.findOne({ id: { $eq: this.currentReplId ?? '' } })
   }
 
-  updateCurrentRepl(code: string) {
+  getFileContentInCurrentRepl(path: string[]): string | undefined {
+    console.debug('Getting file content at path:', path)
+    const repl = this.getCurrentRepl()
+
+    if (repl === undefined) return
+
+    if (path.length === 0) return
+
+    // Navigate through the directory structure to find the file
+    const findFile = (dir: Directory, pathParts: string[]): string | undefined => {
+      if (pathParts.length === 1) {
+        // We're at the target level - find the file
+        const fileName = pathParts[0]
+        const file = dir.children.find(
+          (child) => 'content' in child && child.name === fileName,
+        )
+        return file && 'content' in file ? file.content : undefined
+      } else {
+        // Navigate deeper into the directory structure
+        const dirName = pathParts[0]
+        const subDir = dir.children.find(
+          (child) => 'children' in child && child.name === dirName,
+        )
+        if (subDir && 'children' in subDir) {
+          return findFile(subDir, pathParts.slice(1))
+        }
+        return undefined
+      }
+    }
+
+    return findFile(repl.code, path)
+  }
+
+  addFileToCurrentRepl(path: string[], content: string) {
     if (this.currentReplId === null || !this.ready) return
+
+    if (path.length === 0) return
+
+    const repl = this.getCurrentRepl()
+    if (!repl) return
+
+    // Navigate through the directory structure to add the file
+    const addFile = (dir: Directory, pathParts: string[]): Directory => {
+      if (pathParts.length === 1) {
+        // We're at the target level - add the file
+        const fileName = pathParts[0]
+        // Check if file already exists
+        const fileExists = dir.children.some(
+          (child) => 'content' in child && child.name === fileName,
+        )
+        if (fileExists) {
+          // Update existing file
+          return {
+            ...dir,
+            children: dir.children.map((child) =>
+              'content' in child && child.name === fileName
+                ? { ...child, content }
+                : child,
+            ),
+          }
+        } else {
+          // Add new file
+          return {
+            ...dir,
+            children: [...dir.children, { name: fileName, content }],
+          }
+        }
+      } else {
+        // Navigate deeper into the directory structure
+        const dirName = pathParts[0]
+        return {
+          ...dir,
+          children: dir.children.map((child) =>
+            'children' in child && child.name === dirName
+              ? addFile(child, pathParts.slice(1))
+              : child,
+          ),
+        }
+      }
+    }
+
+    const updatedCode = addFile(repl.code, path)
+
     this.store.updateOne(
       { id: { $eq: this.currentReplId } },
-      { $set: { code, updated: new Date().toISOString() } },
+      {
+        $set: {
+          code: updatedCode,
+          updated: new Date().toISOString(),
+        },
+      },
+    )
+  }
+
+  deletePathInCurrentRepl(path: string[]) {
+    if (this.currentReplId === null || !this.ready) return
+
+    if (path.length === 0) return
+
+    const repl = this.getCurrentRepl()
+    if (!repl) return
+
+    // Navigate through the directory structure to delete the file or directory
+    const deletePath = (dir: Directory, pathParts: string[]): Directory => {
+      if (pathParts.length === 1) {
+        // We're at the target level - remove the file or directory
+        const targetName = pathParts[0]
+        return {
+          ...dir,
+          children: dir.children.filter((child) => child.name !== targetName),
+        }
+      } else {
+        // Navigate deeper into the directory structure
+        const dirName = pathParts[0]
+        return {
+          ...dir,
+          children: dir.children.map((child) =>
+            'children' in child && child.name === dirName
+              ? deletePath(child, pathParts.slice(1))
+              : child,
+          ),
+        }
+      }
+    }
+
+    const updatedCode = deletePath(repl.code, path)
+
+    this.store.updateOne(
+      { id: { $eq: this.currentReplId } },
+      {
+        $set: {
+          code: updatedCode,
+          updated: new Date().toISOString(),
+        },
+      },
+    )
+  }
+
+  updateFileInCurrentRepl(path: string[], content: string) {
+    if (this.currentReplId === null || !this.ready) return
+
+    if (path.length === 0) return
+
+    const repl = this.getCurrentRepl()
+    if (!repl) return
+
+    // Navigate through the directory structure to find and update the file
+    const updateFile = (dir: Directory, pathParts: string[]): Directory => {
+      if (pathParts.length === 1) {
+        // We're at the target level - update the file
+        const fileName = pathParts[0]
+        return {
+          ...dir,
+          children: dir.children.map((child) =>
+            'content' in child && child.name === fileName
+              ? { ...child, content }
+              : child,
+          ),
+        }
+      } else {
+        // Navigate deeper into the directory structure
+        const dirName = pathParts[0]
+        return {
+          ...dir,
+          children: dir.children.map((child) =>
+            'children' in child && child.name === dirName
+              ? updateFile(child, pathParts.slice(1))
+              : child,
+          ),
+        }
+      }
+    }
+
+    const updatedCode = updateFile(repl.code, path)
+
+    this.store.updateOne(
+      { id: { $eq: this.currentReplId } },
+      {
+        $set: {
+          code: updatedCode,
+          updated: new Date().toISOString(),
+        },
+      },
     )
   }
 
@@ -59,7 +256,19 @@ class REPLState {
     return await this.store.insert({
       id: nanoid(),
       name: finalName,
-      code: value.code ?? '',
+      code: {
+        name: 'root',
+        children: [
+          {
+            name: 'index.html',
+            content: BASE_HTML,
+          },
+          {
+            name: 'styles.css',
+            content: BASE_CSS,
+          },
+        ],
+      },
       created: new Date().toISOString(),
       updated: new Date().toISOString(),
     })
@@ -93,6 +302,11 @@ class REPLState {
 
   constructor() {
     this.store.isReady().then(async () => {
+      const currentReplId =
+        (await cookieStore.get('currentRepl'))?.value ?? null
+      if (currentReplId !== null) {
+        this.currentReplId = currentReplId
+      }
       this.ready = true
 
       const count = this.store.find().count()

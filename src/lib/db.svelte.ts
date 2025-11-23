@@ -2,12 +2,12 @@ import { Collection, createIndex } from '@signaldb/core'
 import createIndexedDBAdapter from '@signaldb/indexeddb'
 import svelteReactivityAdapter from '@signaldb/svelte'
 
-interface File {
+type File = {
   name: string
   content: string
 }
 
-interface Directory {
+export interface Directory {
   name: string
   children: Array<File | Directory>
 }
@@ -15,18 +15,19 @@ interface Directory {
 export interface REPL {
   id: string
   name: string
-  code: Array<File | Directory>
+  code: Directory
   created: string
   updated: string
 }
 
 export class REPLCollection extends Collection<REPL> {
-  constructor() {
+  constructor(reactive: boolean = true) {
     super({
       name: 'repls',
       persistence: createIndexedDBAdapter('repls'),
       indices: [createIndex('id'), createIndex('name')],
-      reactivity: svelteReactivityAdapter,
+      reactivity: reactive ? svelteReactivityAdapter : undefined,
+      enableDebugMode: true,
     })
   }
 }

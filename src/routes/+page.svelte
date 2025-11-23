@@ -1,10 +1,10 @@
 <script lang="ts">
-// import Terminal from '../components/Terminal.svelte'
 import Actions from '../components/Actions.svelte'
 import Editor from '../components/Editor.svelte'
 import Header from '../components/Header.svelte'
 import ReadOnlyBanner from '../components/ReadOnlyBanner.svelte'
 import Welcome from '../components/Welcome.svelte'
+import Preview from '../components/Preview.svelte'
 
 import { repls, terminal, editor } from '$lib/state'
 import { page } from '$app/state'
@@ -73,7 +73,7 @@ let sharedCode = $derived(page.url.searchParams.get('code'))
   <Editor />
   {/if}
 
-  <!-- <Terminal /> -->
+  <Preview />
 </main>
 
 <style>

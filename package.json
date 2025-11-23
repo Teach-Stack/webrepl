@@ -13,11 +13,13 @@
   "devDependencies": {
     "@biomejs/biome": "2.3.1",
     "@fontsource/space-grotesk": "^5.2.10",
+    "@iconify-json/ph": "^1.2.2",
     "@iconify-json/svg-spinners": "^1.2.4",
     "@iconify-json/teenyicons": "^1.2.2",
     "@sveltejs/kit": "^2.47.3",
     "@sveltejs/vite-plugin-svelte": "^6.2.1",
     "@types/node": "^22.18.12",
+    "@types/serviceworker": "^0.0.163",
     "@unocss/preset-icons": "^66.5.4",
     "@unocss/preset-web-fonts": "^66.5.4",
     "@unocss/preset-wind3": "^66.5.4",
@@ -31,13 +33,16 @@
   },
   "dependencies": {
     "@battlefieldduck/xterm-svelte": "^2.1.1",
-    "@codemirror/lang-python": "^6.2.1",
+    "@codemirror/lang-css": "^6.3.1",
+    "@codemirror/lang-html": "^6.4.11",
+    "@codemirror/lang-javascript": "^6.2.4",
     "@signaldb/core": "^1.7.1",
     "@signaldb/indexeddb": "^1.1.0",
     "@signaldb/svelte": "^1.1.1",
     "@sveltejs/adapter-static": "^3.0.10",
     "bits-ui": "^2.14.1",
     "fflate": "^0.8.2",
+    "mime": "^4.1.0",
     "nanoid": "^5.1.6",
     "svelte-codemirror-editor": "^2.1.0"
   }

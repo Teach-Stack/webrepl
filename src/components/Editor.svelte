@@ -1,19 +1,58 @@
 <script lang="ts">
 import CodeMirror from 'svelte-codemirror-editor'
-import { python } from '@codemirror/lang-python'
+import { javascript } from '@codemirror/lang-javascript'
+import { css } from '@codemirror/lang-css'
+import { html } from '@codemirror/lang-html'
 
-import { editor } from '$lib/state'
+import { editor, repls } from '$lib/state'
+
+import FileTree from './FileTree.svelte'
+import { preview } from '$lib/state'
+
+$effect(() => {
+  const currentRepl = repls.getCurrentRepl()
+  if (currentRepl) {
+    if (editor.currentFilePath) {
+      const content = repls.getFileContentInCurrentRepl(editor.currentFilePath)
+      if (content !== undefined) {
+        editor.value = content
+      }
+    }
+  }
+})
+
+const language = $derived(() => {
+  if (editor.currentFilePath) {
+    const filename = editor.currentFilePath[editor.currentFilePath.length - 1]
+    if (filename.endsWith('.js')) {
+      return javascript()
+    } else if (filename.endsWith('.css')) {
+      return css()
+    } else if (filename.endsWith('.html')) {
+      return html()
+    }
+  }
+  return undefined
+})
 </script>
 
-<CodeMirror
-  bind:value={editor.value}
-  readonly={editor.readOnly}
-  lang={python()}
-  class="rounded-lg overflow-hidden bg-white transition-all border-1 border-slate-4"
-  styles={{
-    '&': {
-      height: '100%',
-      fontSize: '18px'
-    }
-  }}
-/>
+<div class="grid grid-cols-[300px_1fr] gap-2">
+  <FileTree />
+  <CodeMirror
+    bind:value={editor.value}
+    onready={(view) => (editor.view = view)}
+    onchange={(val) => {
+      repls.updateFileInCurrentRepl(editor.currentFilePath!, val)
+      preview.refresh()
+    }}
+    readonly={editor.readOnly}
+    lang={language()}
+    class="rounded-lg overflow-hidden bg-white transition-all border-1 border-slate-4"
+    styles={{
+      '&': {
+        height: '100%',
+        fontSize: '18px'
+      }
+    }}
+  />
+</div>
