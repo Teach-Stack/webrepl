@@ -2,6 +2,23 @@
 import Button from './ui/Button.svelte'
 
 import { preview } from '$lib/state'
+
+let inputUrl = $state(preview.url)
+
+function handleKeydown(event: KeyboardEvent) {
+  if (event.key === 'Enter') {
+    const input = event.target as HTMLInputElement
+    preview.changeURL(input.value)
+  }
+}
+
+function handleBlur() {
+  inputUrl = preview.url
+}
+
+$effect(() => {
+  inputUrl = preview.url
+})
 </script>
 
 
@@ -18,14 +35,16 @@ import { preview } from '$lib/state'
     </Button>
     <input
       type="text"
-      bind:value={preview.url}
+      bind:value={inputUrl}
+      onkeydown={handleKeydown}
+      onblur={handleBlur}
       class="p-2 outline-none flex-1 border-1 rounded-lg focus:border-blue-6 text-xl font-sans"
     >
     
   </div>
   <iframe
     bind:this={preview.element}
-    src="/preview/index.html"
+    src="/preview/"
     class="flex-1 bg-white overflow-scroll"
     title="website preview"
     onload={() => {

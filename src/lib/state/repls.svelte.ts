@@ -37,7 +37,6 @@ class REPLState {
   }
 
   getFileContentInCurrentRepl(path: string[]): string | undefined {
-    console.debug('Getting file content at path:', path)
     const repl = this.getCurrentRepl()
 
     if (repl === undefined) return
@@ -45,7 +44,10 @@ class REPLState {
     if (path.length === 0) return
 
     // Navigate through the directory structure to find the file
-    const findFile = (dir: Directory, pathParts: string[]): string | undefined => {
+    const findFile = (
+      dir: Directory,
+      pathParts: string[],
+    ): string | undefined => {
       if (pathParts.length === 1) {
         // We're at the target level - find the file
         const fileName = pathParts[0]
