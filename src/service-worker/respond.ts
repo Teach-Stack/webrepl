@@ -9,6 +9,7 @@
 import mime from 'mime'
 
 import { REPLCollection, type Directory } from '../lib/db.svelte'
+import { FourOFour, InternalServerError } from './errorPage'
 
 function rewriteHTMLPaths(html: string): string {
   html = html
@@ -72,11 +73,14 @@ export async function respondWithREPLFiles(event: FetchEvent) {
 
   if (repl === undefined) {
     console.error('[webrepl:sw] No repl found with ID', currentReplId)
-    return new Response('Invalid REPL', { status: 500 })
+    return new Response(InternalServerError('No REPL Found'), { status: 500 })
   }
   console.debug('[webrepl:sw] Found repl', repl)
 
-  const filePath = url.pathname.replace('/preview/', '')
+  const filePath =
+    url.pathname === '/preview/'
+      ? 'index.html'
+      : url.pathname.replace('/preview/', '')
 
   console.debug('[webrepl:sw] Looking for file', filePath)
 
@@ -85,15 +89,10 @@ export async function respondWithREPLFiles(event: FetchEvent) {
     // Split the path and filter out empty parts
     const pathParts = path.split('/').filter((p) => p.length > 0)
 
-    if (pathParts.length === 0) {
-      // Root path - try to find index.html
-      const indexFile = dir.children.find(
-        (child) => 'content' in child && child.name === 'index.html',
-      )
-      return indexFile && 'content' in indexFile ? indexFile.content : undefined
-    }
-
-    const navigate = (current: Directory, parts: string[]): string | undefined => {
+    const navigate = (
+      current: Directory,
+      parts: string[],
+    ): string | undefined => {
       if (parts.length === 1) {
         // We're at the target level - find the file
         const fileName = parts[0]
@@ -123,7 +122,10 @@ export async function respondWithREPLFiles(event: FetchEvent) {
 
   if (typeof fileData === 'string') {
     console.debug('[webrepl:sw] Found file', filePath)
-    console.debug('[webrepl:sw] Responding with MIME type', mime.getType(filePath))
+    console.debug(
+      '[webrepl:sw] Responding with MIME type',
+      filePath === '' ? 'text/html' : mime.getType(filePath),
+    )
 
     if (filePath.endsWith('.html')) {
       console.debug('[webrepl:sw] Enforcing HTML base tag for file', filePath)
@@ -135,5 +137,8 @@ export async function respondWithREPLFiles(event: FetchEvent) {
     })
   }
 
-  return new Response('File not found', { status: 404 })
+  return new Response(FourOFour(filePath), {
+    status: 404,
+    headers: { 'Content-Type': 'text/html' },
+  })
 }
