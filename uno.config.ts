@@ -4,6 +4,8 @@ import presetWind from '@unocss/preset-wind3'
 import presetWebFonts from '@unocss/preset-web-fonts'
 import presetIcons from '@unocss/preset-icons'
 
+import transformerDirectives from '@unocss/transformer-directives'
+
 export default defineConfig({
   presets: [
     presetWind(),
@@ -15,4 +17,5 @@ export default defineConfig({
       },
     }),
   ],
+  transformers: [transformerDirectives()],
 })

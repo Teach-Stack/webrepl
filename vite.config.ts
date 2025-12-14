@@ -1,6 +1,9 @@
 import { sveltekit } from '@sveltejs/kit/vite'
-import UnoCSS from '@unocss/svelte-scoped/vite'
+
 import { defineConfig } from 'vite'
+
+import extractorSvelte from '@unocss/extractor-svelte'
+import UnoCSS from 'unocss/vite'
 
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
@@ -11,10 +14,10 @@ const pkg = JSON.parse(json)
 
 export default defineConfig({
   plugins: [
-    sveltekit(),
     UnoCSS({
-      injectReset: '@unocss/reset/tailwind.css',
+      extractors: [extractorSvelte()],
     }),
+    sveltekit(),
   ],
   define: {
     PKG: pkg,

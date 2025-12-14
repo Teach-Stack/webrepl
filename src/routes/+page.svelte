@@ -99,7 +99,7 @@ main.readOnly {
     "output"
 }
 
-@media (min-width: theme('breakpoints.lg')) {
+@screen xl {
   main {
     grid-template-columns: 1.2fr minmax(384px, 0.8fr);
     grid-template-rows: 48px 1fr;
