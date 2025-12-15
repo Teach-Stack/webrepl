@@ -140,6 +140,85 @@ class REPLState {
     )
   }
 
+  addFolderToCurrentRepl(path: string[]) {
+    if (this.currentReplId === null || !this.ready) return
+
+    if (path.length === 0) return
+
+    const repl = this.getCurrentRepl()
+    if (!repl) return
+
+    // Navigate through the directory structure to add the folder
+    const addFolder = (dir: Directory, pathParts: string[]): Directory => {
+      if (pathParts.length === 1) {
+        // We're at the target level - add the folder
+        const folderName = pathParts[0]
+        // Check if folder already exists
+        const folderExists = dir.children.some(
+          (child) => 'children' in child && child.name === folderName,
+        )
+        if (folderExists) {
+          // Folder already exists, return unchanged
+          return dir
+        } else {
+          // Add new folder
+          return {
+            ...dir,
+            children: [...dir.children, { name: folderName, children: [] }],
+          }
+        }
+      } else {
+        // Navigate deeper into the directory structure
+        const dirName = pathParts[0]
+        const subDir = dir.children.find(
+          (child) => 'children' in child && child.name === dirName,
+        )
+        if (!subDir || !('children' in subDir)) {
+          // Parent directory doesn't exist, create it
+          const newChildren = [...dir.children]
+          const existingIndex = newChildren.findIndex(
+            (child) => child.name === dirName,
+          )
+          if (existingIndex >= 0) {
+            // Replace existing non-directory item with directory
+            newChildren[existingIndex] = { name: dirName, children: [] }
+          } else {
+            // Add new directory
+            newChildren.push({ name: dirName, children: [] })
+          }
+          return {
+            ...dir,
+            children: newChildren.map((child) =>
+              child.name === dirName && 'children' in child
+                ? addFolder(child, pathParts.slice(1))
+                : child,
+            ),
+          }
+        }
+        return {
+          ...dir,
+          children: dir.children.map((child) =>
+            'children' in child && child.name === dirName
+              ? addFolder(child, pathParts.slice(1))
+              : child,
+          ),
+        }
+      }
+    }
+
+    const updatedCode = addFolder(repl.code, path)
+
+    this.store.updateOne(
+      { id: { $eq: this.currentReplId } },
+      {
+        $set: {
+          code: updatedCode,
+          updated: new Date().toISOString(),
+        },
+      },
+    )
+  }
+
   deletePathInCurrentRepl(path: string[]) {
     if (this.currentReplId === null || !this.ready) return
 

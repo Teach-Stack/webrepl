@@ -4,10 +4,9 @@ import { javascript } from '@codemirror/lang-javascript'
 import { css } from '@codemirror/lang-css'
 import { html } from '@codemirror/lang-html'
 
-import { editor, repls } from '$lib/state'
+import { editor, repls, preview } from '$lib/state'
 
-import FileTree from './FileTree.svelte'
-import { preview } from '$lib/state'
+import FileTree from './fileTree/FileTree.svelte'
 
 $effect(() => {
   const currentRepl = repls.getCurrentRepl()
@@ -36,7 +35,7 @@ const language = $derived(() => {
 })
 </script>
 
-<div class="grid grid-cols-[300px_1fr] gap-2">
+<div class="grid  grid-cols-[1fr_3fr] md:grid-cols-[300px_1fr] gap-2">
   <FileTree />
   <CodeMirror
     bind:value={editor.value}
