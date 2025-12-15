@@ -31,3 +31,20 @@ export class REPLCollection extends Collection<REPL> {
     })
   }
 }
+
+export interface ConfigEntry {
+  id: string
+  value: string | number | boolean | object
+}
+
+export class ConfigCollection extends Collection<ConfigEntry> {
+  constructor(reactive: boolean = true) {
+    super({
+      name: 'config',
+      persistence: createIndexedDBAdapter('config'),
+      indices: [createIndex('id')],
+      reactivity: reactive ? svelteReactivityAdapter : undefined,
+      enableDebugMode: true,
+    })
+  }
+}

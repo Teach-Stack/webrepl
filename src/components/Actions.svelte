@@ -1,20 +1,23 @@
 <script lang="ts">
 import { utoa } from '$lib'
-import { terminal, editor, repls } from '$lib/state'
+import { terminal, repls } from '$lib/state'
 
 import Button from './ui/Button.svelte'
 
-function shareCode() {
-  // TODO: implement share code functionality
-  alert('NOT WORKING')
-  // const hash = utoa(editor.value)
-  // const url = new URL(window.location.toString())
-  // url.searchParams.set('code', hash)
-  // if (repls.ready)
-  //   url.searchParams.set('name', repls.getCurrentRepl()?.name ?? 'untitled')
+function shareRepl() {
+  const currentRepl = repls.getCurrentRepl()
+  if (!currentRepl) {
+    console.error('[webrepl:shareCode] no current repl to share')
+    return
+  }
+  const hash = utoa(JSON.stringify(currentRepl.code))
+  const url = new URL(window.location.toString())
+  url.searchParams.set('code', hash)
+  url.searchParams.set('name', currentRepl.name)
+  console.debug('[webrepl:shareCode] share url:', url.toString())
 
-  // navigator.clipboard.writeText(url.toString())
-  // alert('Link Copied')
+  navigator.clipboard.writeText(url.toString())
+  alert('Link Copied')
 }
 </script>
 <svelte:options runes={true} />
@@ -62,7 +65,7 @@ function shareCode() {
     <Button 
       variant="blue"
       aria-details="copy share link to code repl"
-      onclick={shareCode}
+      onclick={shareRepl}
     >
       Share
     </Button>

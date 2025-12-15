@@ -23,7 +23,13 @@ $effect(() => {
 
 
 <div class="flex flex-col bg-gray-1 grid-area-[output] rounded-lg border-1 border-slate-4 overflow-hidden">
-  <div class="border-b-1 border-slate-6 flex bg-gray-1 p-2 gap-2 items-center">
+  {#if !preview.ready}
+    <div class="flex items-center flex-col justify-center h-full">
+      <span class="i-svg-spinners:3-dots-fade size-10"></span>
+      <span class="text-slate-5">Loading...</span>
+    </div>
+  {:else}
+    <div class="border-b-1 border-slate-6 flex bg-gray-1 p-2 gap-2 items-center">
     <Button
       onclick={() => preview.refresh()}
       variant="green"
@@ -53,5 +59,6 @@ $effect(() => {
     }}
     onerror={() => preview.loading = false}
   ></iframe>
+  {/if}
 </div>
 

@@ -3,15 +3,21 @@ import { repls, editor } from '$lib/state'
 import { goto } from '$app/navigation'
 import Button from './ui/Button.svelte'
 import { page } from '$app/state'
+import { atou } from '$lib'
 
 let sharedName = $derived(page.url.searchParams.get('name'))
 
+let sharedRepl = $derived(page.url.searchParams.get('code'))
+
 async function saveAsNew() {
-  if (!repls.ready) return
+  if (!repls.ready || sharedRepl === null) return
+
+  const decoded = atou(sharedRepl)
+  const codeObj = JSON.parse(decoded)
 
   const id = await repls.create({
     name: sharedName ?? 'Untitled',
-    code: editor.value,
+    code: codeObj,
   })
   repls.setCurrentId(id)
   editor.readOnly = false

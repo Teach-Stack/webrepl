@@ -18,6 +18,8 @@ const BASE_CSS = `body {
   font-family: sans-serif;
 }`
 
+type ReadOnlyREPL = Pick<REPL, 'code' | 'name'>
+
 class REPLState {
   store: REPLCollection = new REPLCollection()
 
@@ -25,10 +27,16 @@ class REPLState {
 
   currentReplId: string | null = $state(null)
 
+  readOnlyRepl: ReadOnlyREPL | null = $state(null)
+
   setCurrentId(id: string) {
     this.currentReplId = id
     cookieStore.set('currentRepl', id)
     // localStorage.setItem('currentRepl', id)
+  }
+
+  setReadOnlyRepl(repl: ReadOnlyREPL | null) {
+    this.readOnlyRepl = repl
   }
 
   getCurrentRepl() {
@@ -37,7 +45,7 @@ class REPLState {
   }
 
   getFileContentInCurrentRepl(path: string[]): string | undefined {
-    const repl = this.getCurrentRepl()
+    const repl = this.readOnlyRepl ?? this.getCurrentRepl()
 
     if (repl === undefined) return
 

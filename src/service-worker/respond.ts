@@ -8,8 +8,9 @@
 
 import mime from 'mime'
 
-import { REPLCollection, type Directory } from '../lib/db.svelte'
+import { type REPL, REPLCollection, type Directory } from '../lib/db.svelte'
 import { FourOFour, InternalServerError } from './errorPage'
+import { atou } from '../lib'
 
 function rewriteHTMLPaths(html: string): string {
   html = html
@@ -50,32 +51,59 @@ function rewriteHTMLPaths(html: string): string {
 export async function respondWithREPLFiles(event: FetchEvent) {
   const url = new URL(event.request.url)
 
-  // console.debug('[webrepl:sw] Received fetch event for', url)
-
   console.debug('[webrepl:sw] Handling preview request for', url.pathname)
-  const currentReplId =
-    (await self.cookieStore.get('currentRepl'))?.value ?? null
 
-  if (currentReplId === null) {
-    console.debug('[webrepl:sw] No current repl ID found in cookies')
-    throw new Error('No current REPL ID found')
+  const sharedRepl = (await cookieStore.get('sharedRepl'))?.value ?? null
+
+  let repl: Pick<REPL, 'code'> | undefined
+
+  if (sharedRepl) {
+    console.debug('[webrepl:sw] Handling preview request with shared repl')
+    try {
+      console.debug('[webrepl:sw] Decoding shared repl from cookie', sharedRepl)
+      const decoded = atou(sharedRepl)
+      console.debug('[webrepl:sw] Decoded shared repl', decoded)
+      const replCode = JSON.parse(decoded)
+      console.debug('[webrepl:sw] Parsed shared repl JSON', replCode)
+      repl = {
+        code: replCode,
+      }
+      console.debug('[webrepl:sw] Successfully decoded shared repl', repl)
+    } catch (error) {
+      console.error(
+        '[webrepl:sw] Failed to decode shared repl from cookie',
+        error,
+      )
+      return new Response(InternalServerError('Invalid Shared REPL'), {
+        status: 500,
+      })
+    }
+  } else {
+    console.debug('[webrepl:sw] Handling preview request with normal repl')
+    const currentReplId =
+      (await self.cookieStore.get('currentRepl'))?.value ?? null
+
+    if (currentReplId === null) {
+      console.debug('[webrepl:sw] No current repl ID found in cookies')
+      throw new Error('No current REPL ID found')
+    }
+    console.debug('[webrepl:sw] Current repl is', currentReplId)
+
+    console.debug('[webrepl:sw] Creating REPL collection instance')
+    const replCollection = new REPLCollection(false)
+
+    console.debug('[webrepl:sw] Waiting for REPL collection to be ready')
+    await replCollection.isReady()
+
+    console.debug('[webrepl:sw] REPL collection is ready, searching for repl')
+    repl = replCollection.findOne({ id: { $eq: currentReplId } })
+
+    if (repl === undefined) {
+      console.error('[webrepl:sw] No repl found with ID', currentReplId)
+      return new Response(InternalServerError('No REPL Found'), { status: 500 })
+    }
+    console.debug('[webrepl:sw] Found repl', repl)
   }
-  console.debug('[webrepl:sw] Current repl is', currentReplId)
-
-  console.debug('[webrepl:sw] Creating REPL collection instance')
-  const replCollection = new REPLCollection(false)
-
-  console.debug('[webrepl:sw] Waiting for REPL collection to be ready')
-  await replCollection.isReady()
-
-  console.debug('[webrepl:sw] REPL collection is ready, searching for repl')
-  const repl = replCollection.findOne({ id: { $eq: currentReplId } })
-
-  if (repl === undefined) {
-    console.error('[webrepl:sw] No repl found with ID', currentReplId)
-    return new Response(InternalServerError('No REPL Found'), { status: 500 })
-  }
-  console.debug('[webrepl:sw] Found repl', repl)
 
   const filePath =
     url.pathname === '/preview/'

@@ -4,6 +4,8 @@ class PreviewState {
 
   loading = $state<boolean>(false)
 
+  ready = $state<boolean>(false)
+
   refresh() {
     if (this.element?.contentWindow) {
       this.loading = true

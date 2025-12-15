@@ -6,49 +6,37 @@ import ReadOnlyBanner from '../components/ReadOnlyBanner.svelte'
 import Welcome from '../components/Welcome.svelte'
 import Preview from '../components/Preview.svelte'
 
-import { repls, terminal, editor } from '$lib/state'
+import { repls, terminal, editor, preview } from '$lib/state'
 import { page } from '$app/state'
 import { atou } from '$lib'
 
-let lastLoadedId = $state('')
+let sharedRepl = $derived(page.url.searchParams.get('code'))
 
-let sharedCode = $derived(page.url.searchParams.get('code'))
+$effect(() => {
+  if (sharedRepl !== null) {
+    try {
+      const decoded = atou(sharedRepl)
+      console.debug('[webrepl:page] loading shared code:', decoded)
+      const codeObj = JSON.parse(decoded)
+      console.debug('[webrepl:page] parsed shared code object:', codeObj)
+      cookieStore.set('sharedRepl', sharedRepl)
+      repls.setReadOnlyRepl({
+        name: page.url.searchParams.get('name') || 'Untitled',
+        code: codeObj,
+      })
+      editor.readOnly = true
+    } catch (e) {
+      console.error('[webrepl:page] failed to load shared code:', e)
+    }
+  } else {
+    console.debug('[webrepl:page] no shared code found in URL')
+    console.debug('[webrepl:page] clearing shared repl state')
+    cookieStore.delete('sharedRepl')
+    repls.setReadOnlyRepl(null)
+  }
 
-// $effect(() => {
-//   if (sharedCode !== null) {
-//     try {
-//       const code = atou(sharedCode)
-//       if (code !== editor.value) {
-//         console.debug('[webrepl] loading shared code from url')
-//         setTimeout(() => {
-//           editor.value = code
-//           editor.readOnly = true
-//         }, 0)
-//       }
-//     } catch (e) {
-//       // @ts-expect-error error type unknown
-//       if (e.name === 'InvalidCharacterError') {
-//         console.warn('[webrepl] invalid shared code in url')
-//       }
-//     }
-//   } else if (repls.ready && lastLoadedId !== repls.currentReplId) {
-//     lastLoadedId = repls.currentReplId ?? ''
-//     console.debug('[webrepl] loading code from indexedb')
-//     editor.value = repls.getCurrentRepl()?.code ?? ''
-//   }
-// })
-
-// $effect(() => {
-//   if (repls.ready && !editor.readOnly) {
-//     const currentRepl = repls.getCurrentRepl()
-//     if (currentRepl === undefined) {
-//       console.warn('[webrepl] unable to find current repl')
-//     } else if (editor.value !== currentRepl.code) {
-//       console.debug('[webrepl] updating code in indexedb')
-//       repls.updateCurrentRepl(editor.value)
-//     }
-//   }
-// })
+  preview.ready = true
+})
 </script>
 
 <svelte:window onresize={terminal.resize} />
