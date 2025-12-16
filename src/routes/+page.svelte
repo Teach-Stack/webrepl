@@ -7,8 +7,9 @@ import Welcome from '../components/Welcome.svelte'
 import Preview from '../components/Preview.svelte'
 
 import { repls, terminal, editor, preview } from '$lib/state'
+import { atou } from '$lib/encoding'
+
 import { page } from '$app/state'
-import { atou } from '$lib'
 
 let sharedRepl = $derived(page.url.searchParams.get('code'))
 

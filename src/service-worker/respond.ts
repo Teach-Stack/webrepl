@@ -8,7 +8,7 @@
 
 import mime from 'mime'
 
-import { type REPL, REPLCollection, type Directory } from '../lib/db.svelte'
+import { type REPL, REPLCollection, type Directory } from '../lib/db'
 import { FourOFour, InternalServerError } from './errorPage'
 import { atou } from '../lib'
 
@@ -90,7 +90,7 @@ export async function respondWithREPLFiles(event: FetchEvent) {
     console.debug('[webrepl:sw] Current repl is', currentReplId)
 
     console.debug('[webrepl:sw] Creating REPL collection instance')
-    const replCollection = new REPLCollection(false)
+    const replCollection = new REPLCollection()
 
     console.debug('[webrepl:sw] Waiting for REPL collection to be ready')
     await replCollection.isReady()

@@ -1,9 +1,11 @@
 <script lang="ts">
-import { repls, editor } from '$lib/state'
-import { goto } from '$app/navigation'
 import Button from './ui/Button.svelte'
+
+import { goto } from '$app/navigation'
 import { page } from '$app/state'
-import { atou } from '$lib'
+
+import { repls, editor } from '$lib/state'
+import { atou } from '$lib/encoding'
 
 let sharedName = $derived(page.url.searchParams.get('name'))
 

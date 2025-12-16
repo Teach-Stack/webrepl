@@ -1,5 +1,5 @@
 <script lang="ts">
-import { utoa } from '$lib'
+import { utoa } from '$lib/encoding'
 import { terminal, repls } from '$lib/state'
 
 import Button from './ui/Button.svelte'

@@ -17,7 +17,7 @@ class PreviewState {
     if (this.element?.contentWindow) {
       this.loading = false
       this.url = newURL
-      this.element.contentWindow.location.href = '/preview' + newURL
+      this.element.contentWindow.location.href = `/preview${newURL}`
     }
   }
 

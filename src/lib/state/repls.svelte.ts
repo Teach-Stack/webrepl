@@ -1,4 +1,6 @@
-import { REPLCollection, type Directory, type REPL } from '$lib/db.svelte'
+import type { Directory, REPL } from '$lib/db'
+import { REPLCollection } from '$lib/db.svelte'
+
 import { nanoid } from 'nanoid'
 
 const BASE_HTML = `<!DOCTYPE html>
