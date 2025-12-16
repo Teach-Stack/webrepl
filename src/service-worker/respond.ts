@@ -10,7 +10,7 @@ import mime from 'mime'
 
 import { type REPL, REPLCollection, type Directory } from '../lib/db'
 import { FourOFour, InternalServerError } from './errorPage'
-import { atou } from '../lib'
+import { atou } from '../lib/encoding'
 
 function rewriteHTMLPaths(html: string): string {
   html = html
