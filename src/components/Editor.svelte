@@ -35,7 +35,7 @@ const language = $derived(() => {
 })
 </script>
 
-<div class="grid  grid-cols-[1fr_3fr] md:grid-cols-[300px_1fr] gap-2">
+<div class="grid  grid-cols-[1fr_3fr] md:grid-cols-[300px_1fr] gap-2 overflow-hidden">
   <FileTree />
   <CodeMirror
     bind:value={editor.value}
