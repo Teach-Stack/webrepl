@@ -161,7 +161,10 @@ export async function respondWithREPLFiles(event: FetchEvent) {
     }
 
     return new Response(fileData, {
-      headers: { 'Content-Type': mime.getType(filePath) ?? 'text/plain' },
+      headers: { 
+        'Content-Type': mime.getType(filePath) ?? 'text/plain',
+        'Cross-Origin-Embedder-Policy': 'require-corp'
+      },
     })
   }
 
