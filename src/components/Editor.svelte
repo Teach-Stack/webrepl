@@ -7,11 +7,32 @@ import { html } from '@codemirror/lang-html'
 import { editor, repls, preview } from '$lib/state'
 
 import FileTree from './fileTree/FileTree.svelte'
+import ImagePreview from './ImagePreview.svelte'
+
+// Image file extensions
+const IMAGE_EXTENSIONS = [
+  '.jpg',
+  '.jpeg',
+  '.png',
+  '.gif',
+  '.webp',
+  '.bmp',
+  '.svg',
+]
+
+// Check if the current file is an image
+const isImageFile = (path: string[]): boolean => {
+  if (!path || path.length === 0) return false
+  const filename = path[path.length - 1].toLowerCase()
+  return IMAGE_EXTENSIONS.some((ext) => filename.endsWith(ext))
+}
+
+const showImagePreview = $derived(isImageFile(editor.currentFilePath))
 
 $effect(() => {
   const currentRepl = repls.getCurrentRepl()
   if (currentRepl) {
-    if (editor.currentFilePath) {
+    if (editor.currentFilePath && !isImageFile(editor.currentFilePath)) {
       const content = repls.getFileContentInCurrentRepl(editor.currentFilePath)
       if (content !== undefined) {
         editor.value = content
@@ -37,21 +58,25 @@ const language = $derived(() => {
 
 <div class="grid  grid-cols-[1fr_3fr] md:grid-cols-[300px_1fr] gap-2">
   <FileTree />
-  <CodeMirror
-    bind:value={editor.value}
-    onready={(view) => (editor.view = view)}
-    onchange={(val) => {
-      repls.updateFileInCurrentRepl(editor.currentFilePath!, val)
-      preview.refresh()
-    }}
-    readonly={editor.readOnly}
-    lang={language()}
-    class="rounded-lg overflow-hidden bg-white transition-all border-1 border-slate-4"
-    styles={{
-      '&': {
-        height: '100%',
-        fontSize: '18px'
-      }
-    }}
-  />
+  {#if showImagePreview}
+    <ImagePreview filePath={editor.currentFilePath} />
+  {:else}
+    <CodeMirror
+      bind:value={editor.value}
+      onready={(view) => (editor.view = view)}
+      onchange={(val) => {
+        repls.updateFileInCurrentRepl(editor.currentFilePath!, val)
+        preview.refresh()
+      }}
+      readonly={editor.readOnly}
+      lang={language()}
+      class="rounded-lg overflow-hidden bg-white transition-all border-1 border-slate-4"
+      styles={{
+        '&': {
+          height: '100%',
+          fontSize: '18px'
+        }
+      }}
+    />
+  {/if}
 </div>

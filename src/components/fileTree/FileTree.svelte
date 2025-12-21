@@ -5,6 +5,7 @@ import type { Directory } from '$lib/db.svelte'
 
 import AddFileDialog from './AddFileDialog.svelte'
 import AddFolderDialog from './AddFolderDialog.svelte'
+import ImageUploadDialog from './ImageUploadDialog.svelte'
 
 import Button from '../ui/Button.svelte'
 
@@ -12,6 +13,7 @@ const root = $derived(repls.getCurrentRepl()?.code)
 
 let showAddFileDialog = $state(false)
 let showAddFolderDialog = $state(false)
+let showImageUploadDialog = $state(false)
 let dialogDirectory = $state<string[]>([])
 
 function openAddFileDialog(directory: string[] = []) {
@@ -22,6 +24,11 @@ function openAddFileDialog(directory: string[] = []) {
 function openAddFolderDialog(directory: string[] = []) {
   dialogDirectory = directory
   showAddFolderDialog = true
+}
+
+function openImageUploadDialog(directory: string[] = []) {
+  dialogDirectory = directory
+  showImageUploadDialog = true
 }
 </script>
 
@@ -67,7 +74,7 @@ function openAddFolderDialog(directory: string[] = []) {
             <i class="i-ph:file-css"></i>
           {:else if key.endsWith('.js')}
             <i class="i-ph:file-js"></i>
-          {:else if key.endsWith('.jpg') || key.endsWith('.png') || key.endsWith('.gif') || key.endsWith('.svg')}
+          {:else if key.endsWith('.jpg') || key.endsWith('.jpeg') || key.endsWith('.png') || key.endsWith('.gif') || key.endsWith('.svg') || key.endsWith('.webp') || key.endsWith('.bmp')}
             <i class="i-ph:file-image"></i>
           {:else}
             <i class="i-ph:file"></i>
@@ -101,6 +108,16 @@ function openAddFolderDialog(directory: string[] = []) {
             >
               <div class="i-ph:folder-plus text-slate-10"></div>
             </button>
+            <button
+              class="opacity-0 group-hover:opacity-100 p-1 hover:bg-slate-3 rounded transition-all"
+              onclick={(e) => {
+                e.stopPropagation()
+                openImageUploadDialog([...parent, child.name])
+              }}
+              title="Upload image to this folder"
+            >
+              <div class="i-ph:image-square text-slate-10"></div>
+            </button>
           </span>
         </span>
         <ul role="group" class="ml-4">
@@ -129,6 +146,13 @@ function openAddFolderDialog(directory: string[] = []) {
       >
         <div class="i-ph:folder-plus"></div>
       </Button>
+      <Button
+        onclick={() => openImageUploadDialog()}
+        title="Upload image"
+        size="sm"
+      >
+        <div class="i-ph:image-square"></div>
+      </Button>
     </div>
   </div>
   {#if root}
@@ -140,3 +164,4 @@ function openAddFolderDialog(directory: string[] = []) {
 
 <AddFileDialog bind:open={showAddFileDialog} directory={dialogDirectory} />
 <AddFolderDialog bind:open={showAddFolderDialog} directory={dialogDirectory} />
+<ImageUploadDialog bind:open={showImageUploadDialog} directory={dialogDirectory} />

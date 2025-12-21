@@ -46,6 +46,7 @@
     "@signaldb/svelte": "^1.1.1",
     "@sveltejs/adapter-static": "^3.0.10",
     "bits-ui": "^2.14.4",
+    "compressorjs": "^1.2.1",
     "fflate": "^0.8.2",
     "mime": "^4.1.0",
     "nanoid": "^5.1.6",
