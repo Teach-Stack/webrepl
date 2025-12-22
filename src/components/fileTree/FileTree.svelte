@@ -1,7 +1,7 @@
 <script lang="ts">
 import { editor, repls } from '$lib/state'
 
-import type { Directory } from '$lib/db.svelte'
+import type { Directory } from '$lib/db'
 
 import AddFileDialog from './AddFileDialog.svelte'
 import AddFolderDialog from './AddFolderDialog.svelte'
@@ -67,25 +67,27 @@ function openImageUploadDialog(directory: string[] = []) {
       }}"
     >
       {#if 'content' in child}
-        <span class="flex gap-1 items-center text-xl hover:bg-slate-2 transition-colors w-full cursor-pointer rounded px-1">
-          {#if key.endsWith('.html')}
-            <i class="i-ph:file-html"></i>
-          {:else if key.endsWith('.css')}
-            <i class="i-ph:file-css"></i>
-          {:else if key.endsWith('.js')}
-            <i class="i-ph:file-js"></i>
-          {:else if key.endsWith('.jpg') || key.endsWith('.jpeg') || key.endsWith('.png') || key.endsWith('.gif') || key.endsWith('.svg') || key.endsWith('.webp') || key.endsWith('.bmp')}
-            <i class="i-ph:file-image"></i>
-          {:else}
-            <i class="i-ph:file"></i>
-          {/if}
-          {key}
-        </span>
+        <div class="flex gap-1 items-center text-xl hover:bg-slate-2 transition-colors w-full cursor-pointer rounded px-1">
+          <div class="flex-shrink-0">
+            {#if key.endsWith('.html')}
+              <div class="i-ph:file-html"></div>
+            {:else if key.endsWith('.css')}
+              <div class="i-ph:file-css"></div>
+            {:else if key.endsWith('.js')}
+              <div class="i-ph:file-js"></div>
+            {:else if key.endsWith('.jpg') || key.endsWith('.jpeg') || key.endsWith('.png') || key.endsWith('.gif') || key.endsWith('.svg') || key.endsWith('.webp') || key.endsWith('.bmp')}
+              <div class="i-ph:file-image"></div>
+            {:else}
+              <div class="i-ph:file"></div>
+            {/if}
+          </div>
+          <div class="whitespace-nowrap overflow-hidden text-ellipsis">{key}</div>
+        </div>
       {:else}
         <span class="flex justify-between items-center group hover:bg-slate-2 transition-colors w-full cursor-pointer rounded px-1">
           <div class="flex gap-1 items-center text-xl">
-            <i class="{state.expanded ? 'i-ph:folder-open' : 'i-ph:folder'}"></i>
-            {key}
+            <div class="{state.expanded ? 'i-ph:folder-open' : 'i-ph:folder'}"></div>
+            <div class="whitespace-nowrap overflow-hidden text-ellipsis">{key}</div>
           </div>
           <span class="flex gap-1">
             <button
@@ -116,7 +118,7 @@ function openImageUploadDialog(directory: string[] = []) {
               }}
               title="Upload image to this folder"
             >
-              <div class="i-ph:image-square text-slate-10"></div>
+              <div class="i-ph:upload text-slate-10"></div>
             </button>
           </span>
         </span>
@@ -151,7 +153,7 @@ function openImageUploadDialog(directory: string[] = []) {
         title="Upload image"
         size="sm"
       >
-        <div class="i-ph:image-square"></div>
+        <div class="i-ph:upload"></div>
       </Button>
     </div>
   </div>
