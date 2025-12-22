@@ -149,6 +149,30 @@ export async function respondWithREPLFiles(event: FetchEvent) {
   console.debug('[webrepl:sw] Found file data', fileData)
 
   if (typeof fileData === 'string') {
+    // Handle base64 data URLs (images)
+    if (fileData.startsWith('data:')) {
+      const matches = fileData.match(/^data:([^;]+);base64,(.*)$/)
+      if (matches) {
+        const mimeType = matches[1]
+        const base64Data = matches[2]
+        console.debug(
+          '[webrepl:sw] Decoding base64 image with MIME type',
+          mimeType,
+        )
+        const binaryString = atob(base64Data)
+        const bytes = new Uint8Array(binaryString.length)
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i)
+        }
+        return new Response(bytes, {
+          headers: {
+            'Content-Type': mimeType,
+            'Cross-Origin-Embedder-Policy': 'require-corp',
+          },
+        })
+      }
+    }
+
     console.debug('[webrepl:sw] Found file', filePath)
     console.debug(
       '[webrepl:sw] Responding with MIME type',
@@ -161,9 +185,9 @@ export async function respondWithREPLFiles(event: FetchEvent) {
     }
 
     return new Response(fileData, {
-      headers: { 
+      headers: {
         'Content-Type': mime.getType(filePath) ?? 'text/plain',
-        'Cross-Origin-Embedder-Policy': 'require-corp'
+        'Cross-Origin-Embedder-Policy': 'require-corp',
       },
     })
   }
