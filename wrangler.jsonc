@@ -11,7 +11,7 @@
   },
   "routes": [
     {
-      "pattern": "webrepl.justinforlenza.dev",
+      "pattern": "webrepl.teachstack.org",
       "custom_domain": true
     }
   ]
