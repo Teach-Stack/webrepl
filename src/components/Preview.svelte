@@ -1,27 +1,26 @@
 <script lang="ts">
-import RefreshOutline from '~icons/teenyicons/refresh-outline'
-import DotsFade from '~icons/svg-spinners/3-dots-fade'
+  import RefreshOutline from '~icons/teenyicons/refresh-outline'
+  import DotsFade from '~icons/svg-spinners/3-dots-fade'
 
-import { preview } from '#lib/state/index.ts'
+  import { preview } from '#lib/state/index.ts'
 
-let inputUrl = $state(preview.url)
+  let inputUrl = $state(preview.url)
 
-function handleKeydown(event: KeyboardEvent) {
-  if (event.key === 'Enter') {
-    const input = event.target as HTMLInputElement
-    preview.changeURL(input.value)
+  function handleKeydown(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      const input = event.target as HTMLInputElement
+      preview.changeURL(input.value)
+    }
   }
-}
 
-function handleBlur() {
-  inputUrl = preview.url
-}
+  function handleBlur() {
+    inputUrl = preview.url
+  }
 
-$effect(() => {
-  inputUrl = preview.url
-})
+  $effect(() => {
+    inputUrl = preview.url
+  })
 </script>
-
 
 <div class="preview">
   {#if !preview.ready}
@@ -45,7 +44,7 @@ $effect(() => {
         onkeydown={handleKeydown}
         onblur={handleBlur}
         aria-label="Preview URL"
-      >
+      />
     </div>
     <iframe
       bind:this={preview.element}
@@ -55,7 +54,7 @@ $effect(() => {
         preview.loading = false
         preview.updateURL()
       }}
-      onerror={() => preview.loading = false}
+      onerror={() => (preview.loading = false)}
     ></iframe>
   {/if}
 </div>

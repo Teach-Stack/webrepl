@@ -1,81 +1,77 @@
 <script lang="ts">
+  import { repls, editor } from '#lib/state/index.ts'
+  import type { Directory } from '#lib/db.ts'
 
-import { repls, editor } from '#lib/state/index.ts'
-import type { Directory } from '#lib/db.ts'
-
-type Props = {
-  open: boolean
-  directory?: string[]
-}
-
-let { open = $bindable(false), directory = [] }: Props = $props()
-
-let newFileName = $state('')
-let fileNameError = $state('')
-
-function validateFileName(name: string): boolean {
-  // Check for empty name
-  if (!name.trim()) {
-    fileNameError = 'File name cannot be empty'
-    return false
+  type Props = {
+    open: boolean
+    directory?: string[]
   }
 
-  // Only allow alphanumeric, dots, dashes, underscores
-  const validPattern = /^[a-zA-Z0-9._-]+$/
-  if (!validPattern.test(name)) {
-    fileNameError =
-      'File name can only contain letters, numbers, dots, dashes, and underscores'
-    return false
-  }
+  let { open = $bindable(false), directory = [] }: Props = $props()
 
-  // Check if file already exists in current directory
-  const repl = repls.getCurrentRepl()
-  if (repl) {
-    const checkExists = (dir: Directory, path: string[]): boolean => {
-      if (path.length === 0) {
-        return dir.children.some((child) => child.name === name)
-      }
-      const nextDir = dir.children.find(
-        (child) => 'children' in child && child.name === path[0],
-      )
-      if (nextDir && 'children' in nextDir) {
-        return checkExists(nextDir, path.slice(1))
-      }
+  let newFileName = $state('')
+  let fileNameError = $state('')
+
+  function validateFileName(name: string): boolean {
+    // Check for empty name
+    if (!name.trim()) {
+      fileNameError = 'File name cannot be empty'
       return false
     }
 
-    if (checkExists(repl.code, directory)) {
-      fileNameError = 'A file with this name already exists'
+    // Only allow alphanumeric, dots, dashes, underscores
+    const validPattern = /^[a-zA-Z0-9._-]+$/
+    if (!validPattern.test(name)) {
+      fileNameError = 'File name can only contain letters, numbers, dots, dashes, and underscores'
       return false
     }
-  }
 
-  fileNameError = ''
-  return true
-}
+    // Check if file already exists in current directory
+    const repl = repls.getCurrentRepl()
+    if (repl) {
+      const checkExists = (dir: Directory, path: string[]): boolean => {
+        if (path.length === 0) {
+          return dir.children.some((child) => child.name === name)
+        }
+        const nextDir = dir.children.find((child) => 'children' in child && child.name === path[0])
+        if (nextDir && 'children' in nextDir) {
+          return checkExists(nextDir, path.slice(1))
+        }
+        return false
+      }
 
-function addFile() {
-  if (validateFileName(newFileName)) {
-    const fullPath = [...directory, newFileName]
-    repls.addFileToCurrentRepl(fullPath, '')
-    editor.currentFilePath = fullPath
+      if (checkExists(repl.code, directory)) {
+        fileNameError = 'A file with this name already exists'
+        return false
+      }
+    }
 
-    open = false
-  }
-}
-
-$effect(() => {
-  if (open) {
-    newFileName = ''
     fileNameError = ''
+    return true
   }
-})
-let dialog: HTMLDialogElement
 
-$effect(() => {
-  if (open) dialog.showModal()
-  else dialog.close()
-})
+  function addFile() {
+    if (validateFileName(newFileName)) {
+      const fullPath = [...directory, newFileName]
+      repls.addFileToCurrentRepl(fullPath, '')
+      editor.currentFilePath = fullPath
+
+      open = false
+    }
+  }
+
+  $effect(() => {
+    if (open) {
+      newFileName = ''
+      fileNameError = ''
+    }
+  })
+  let dialog: HTMLDialogElement
+
+  $effect(() => {
+    if (open) dialog.showModal()
+    else dialog.close()
+  })
 </script>
 
 <dialog bind:this={dialog} onclose={() => (open = false)} closedby="any">
@@ -97,7 +93,7 @@ $effect(() => {
         id="fileName"
         type="text"
         bind:value={newFileName}
-        oninput={() => fileNameError = ''}
+        oninput={() => (fileNameError = '')}
         placeholder="example.html"
         aria-invalid={fileNameError !== ''}
         aria-describedby="fileNameHint"
@@ -111,12 +107,8 @@ $effect(() => {
     </div>
 
     <div class="flex">
-      <button onclick={() => (open = false)}>
-        Cancel
-      </button>
-      <button class="primary" onclick={addFile}>
-        Create File
-      </button>
+      <button onclick={() => (open = false)}> Cancel </button>
+      <button class="primary" onclick={addFile}> Create File </button>
     </div>
   </div>
 </dialog>

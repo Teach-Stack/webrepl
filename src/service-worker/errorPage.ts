@@ -82,8 +82,7 @@ export function InternalServerError(message?: string): string {
   return createErrorPage({
     code: '500',
     title: 'Internal Server Error',
-    message:
-      message || 'An unexpected error occurred while processing your request.',
+    message: message || 'An unexpected error occurred while processing your request.',
   })
 }
 

@@ -20,22 +20,13 @@ function rewriteHTMLPaths(html: string): string {
     .replace(/src=(["'])\/(?!preview\/)([^"']*)\1/g, 'src=$1/preview/$2$1')
     // srcset attributes (responsive images)
     .replace(/srcset=(["'])([^"']*)\1/g, (_, quote, srcset) => {
-      const rewritten = srcset.replace(
-        /\/(?!preview\/)([^\s,]+)/g,
-        '/preview/$1',
-      )
+      const rewritten = srcset.replace(/\/(?!preview\/)([^\s,]+)/g, '/preview/$1')
       return `srcset=${quote}${rewritten}${quote}`
     })
     // data attributes that might contain paths
-    .replace(
-      /data-([^=]+)=(["'])\/(?!preview\/)([^"']*)\2/g,
-      'data-$1=$2/preview/$3$2',
-    )
+    .replace(/data-([^=]+)=(["'])\/(?!preview\/)([^"']*)\2/g, 'data-$1=$2/preview/$3$2')
     // poster attribute (video)
-    .replace(
-      /poster=(["'])\/(?!preview\/)([^"']*)\1/g,
-      'poster=$1/preview/$2$1',
-    )
+    .replace(/poster=(["'])\/(?!preview\/)([^"']*)\1/g, 'poster=$1/preview/$2$1')
 
   // Ensure base tag is present
   const baseTag = '<base href="/preview/">'
@@ -70,18 +61,14 @@ export async function respondWithREPLFiles(event: FetchEvent) {
       }
       console.debug('[webrepl:sw] Successfully decoded shared repl', repl)
     } catch (error) {
-      console.error(
-        '[webrepl:sw] Failed to decode shared repl from cookie',
-        error,
-      )
+      console.error('[webrepl:sw] Failed to decode shared repl from cookie', error)
       return new Response(InternalServerError('Invalid Shared REPL'), {
         status: 500,
       })
     }
   } else {
     console.debug('[webrepl:sw] Handling preview request with normal repl')
-    const currentReplId =
-      (await self.cookieStore.get('currentRepl'))?.value ?? null
+    const currentReplId = (await self.cookieStore.get('currentRepl'))?.value ?? null
 
     if (currentReplId === null) {
       console.debug('[webrepl:sw] No current repl ID found in cookies')
@@ -106,9 +93,7 @@ export async function respondWithREPLFiles(event: FetchEvent) {
   }
 
   const filePath =
-    url.pathname === '/preview/'
-      ? 'index.html'
-      : url.pathname.replace('/preview/', '')
+    url.pathname === '/preview/' ? 'index.html' : url.pathname.replace('/preview/', '')
 
   console.debug('[webrepl:sw] Looking for file', filePath)
 
@@ -117,22 +102,17 @@ export async function respondWithREPLFiles(event: FetchEvent) {
     // Split the path and filter out empty parts
     const pathParts = path.split('/').filter((p) => p.length > 0)
 
-    const navigate = (
-      current: Directory,
-      parts: string[],
-    ): string | undefined => {
+    const navigate = (current: Directory, parts: string[]): string | undefined => {
       if (parts.length === 1) {
         // We're at the target level - find the file
         const fileName = parts[0]
-        const file = current.children.find(
-          (child) => 'content' in child && child.name === fileName,
-        )
+        const file = current.children.find((child) => 'content' in child && child.name === fileName)
         return file && 'content' in file ? file.content : undefined
       } else {
         // Navigate deeper into the directory structure
         const dirName = parts[0]
         const subDir = current.children.find(
-          (child) => 'children' in child && child.name === dirName,
+          (child) => 'children' in child && child.name === dirName
         )
         if (subDir && 'children' in subDir) {
           return navigate(subDir, parts.slice(1))
@@ -152,7 +132,7 @@ export async function respondWithREPLFiles(event: FetchEvent) {
     console.debug('[webrepl:sw] Found file', filePath)
     console.debug(
       '[webrepl:sw] Responding with MIME type',
-      filePath === '' ? 'text/html' : mime.getType(filePath),
+      filePath === '' ? 'text/html' : mime.getType(filePath)
     )
 
     if (filePath.endsWith('.html')) {

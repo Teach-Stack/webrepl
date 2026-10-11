@@ -1,38 +1,38 @@
 <script lang="ts">
-import CodeMirror from 'svelte-codemirror-editor'
-import { javascript } from '@codemirror/lang-javascript'
-import { css } from '@codemirror/lang-css'
-import { html } from '@codemirror/lang-html'
+  import CodeMirror from 'svelte-codemirror-editor'
+  import { javascript } from '@codemirror/lang-javascript'
+  import { css } from '@codemirror/lang-css'
+  import { html } from '@codemirror/lang-html'
 
-import { editor, repls, preview } from '#lib/state/index.ts'
+  import { editor, repls, preview } from '#lib/state/index.ts'
 
-import FileTree from './fileTree/FileTree.svelte'
+  import FileTree from './fileTree/FileTree.svelte'
 
-$effect(() => {
-  const currentRepl = repls.getCurrentRepl()
-  if (currentRepl) {
-    if (editor.currentFilePath) {
-      const content = repls.getFileContentInCurrentRepl(editor.currentFilePath)
-      if (content !== undefined) {
-        editor.value = content
+  $effect(() => {
+    const currentRepl = repls.getCurrentRepl()
+    if (currentRepl) {
+      if (editor.currentFilePath) {
+        const content = repls.getFileContentInCurrentRepl(editor.currentFilePath)
+        if (content !== undefined) {
+          editor.value = content
+        }
       }
     }
-  }
-})
+  })
 
-const language = $derived(() => {
-  if (editor.currentFilePath) {
-    const filename = editor.currentFilePath[editor.currentFilePath.length - 1]
-    if (filename.endsWith('.js')) {
-      return javascript()
-    } else if (filename.endsWith('.css')) {
-      return css()
-    } else if (filename.endsWith('.html')) {
-      return html()
+  const language = $derived(() => {
+    if (editor.currentFilePath) {
+      const filename = editor.currentFilePath[editor.currentFilePath.length - 1]
+      if (filename.endsWith('.js')) {
+        return javascript()
+      } else if (filename.endsWith('.css')) {
+        return css()
+      } else if (filename.endsWith('.html')) {
+        return html()
+      }
     }
-  }
-  return undefined
-})
+    return undefined
+  })
 </script>
 
 <div class="editor">
@@ -50,8 +50,8 @@ const language = $derived(() => {
     styles={{
       '&': {
         height: '100%',
-        fontSize: '18px'
-      }
+        fontSize: '18px',
+      },
     }}
   />
 </div>

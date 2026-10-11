@@ -55,23 +55,16 @@ class REPLState {
     if (path.length === 0) return
 
     // Navigate through the directory structure to find the file
-    const findFile = (
-      dir: Directory,
-      pathParts: string[],
-    ): string | undefined => {
+    const findFile = (dir: Directory, pathParts: string[]): string | undefined => {
       if (pathParts.length === 1) {
         // We're at the target level - find the file
         const fileName = pathParts[0]
-        const file = dir.children.find(
-          (child) => 'content' in child && child.name === fileName,
-        )
+        const file = dir.children.find((child) => 'content' in child && child.name === fileName)
         return file && 'content' in file ? file.content : undefined
       } else {
         // Navigate deeper into the directory structure
         const dirName = pathParts[0]
-        const subDir = dir.children.find(
-          (child) => 'children' in child && child.name === dirName,
-        )
+        const subDir = dir.children.find((child) => 'children' in child && child.name === dirName)
         if (subDir && 'children' in subDir) {
           return findFile(subDir, pathParts.slice(1))
         }
@@ -97,16 +90,14 @@ class REPLState {
         const fileName = pathParts[0]
         // Check if file already exists
         const fileExists = dir.children.some(
-          (child) => 'content' in child && child.name === fileName,
+          (child) => 'content' in child && child.name === fileName
         )
         if (fileExists) {
           // Update existing file
           return {
             ...dir,
             children: dir.children.map((child) =>
-              'content' in child && child.name === fileName
-                ? { ...child, content }
-                : child,
+              'content' in child && child.name === fileName ? { ...child, content } : child
             ),
           }
         } else {
@@ -124,7 +115,7 @@ class REPLState {
           children: dir.children.map((child) =>
             'children' in child && child.name === dirName
               ? addFile(child, pathParts.slice(1))
-              : child,
+              : child
           ),
         }
       }
@@ -139,7 +130,7 @@ class REPLState {
           code: updatedCode,
           updated: new Date().toISOString(),
         },
-      },
+      }
     )
   }
 
@@ -158,7 +149,7 @@ class REPLState {
         const folderName = pathParts[0]
         // Check if folder already exists
         const folderExists = dir.children.some(
-          (child) => 'children' in child && child.name === folderName,
+          (child) => 'children' in child && child.name === folderName
         )
         if (folderExists) {
           // Folder already exists, return unchanged
@@ -173,15 +164,11 @@ class REPLState {
       } else {
         // Navigate deeper into the directory structure
         const dirName = pathParts[0]
-        const subDir = dir.children.find(
-          (child) => 'children' in child && child.name === dirName,
-        )
+        const subDir = dir.children.find((child) => 'children' in child && child.name === dirName)
         if (!subDir || !('children' in subDir)) {
           // Parent directory doesn't exist, create it
           const newChildren = [...dir.children]
-          const existingIndex = newChildren.findIndex(
-            (child) => child.name === dirName,
-          )
+          const existingIndex = newChildren.findIndex((child) => child.name === dirName)
           if (existingIndex >= 0) {
             // Replace existing non-directory item with directory
             newChildren[existingIndex] = { name: dirName, children: [] }
@@ -194,7 +181,7 @@ class REPLState {
             children: newChildren.map((child) =>
               child.name === dirName && 'children' in child
                 ? addFolder(child, pathParts.slice(1))
-                : child,
+                : child
             ),
           }
         }
@@ -203,7 +190,7 @@ class REPLState {
           children: dir.children.map((child) =>
             'children' in child && child.name === dirName
               ? addFolder(child, pathParts.slice(1))
-              : child,
+              : child
           ),
         }
       }
@@ -218,7 +205,7 @@ class REPLState {
           code: updatedCode,
           updated: new Date().toISOString(),
         },
-      },
+      }
     )
   }
 
@@ -247,7 +234,7 @@ class REPLState {
           children: dir.children.map((child) =>
             'children' in child && child.name === dirName
               ? deletePath(child, pathParts.slice(1))
-              : child,
+              : child
           ),
         }
       }
@@ -262,7 +249,7 @@ class REPLState {
           code: updatedCode,
           updated: new Date().toISOString(),
         },
-      },
+      }
     )
   }
 
@@ -282,9 +269,7 @@ class REPLState {
         return {
           ...dir,
           children: dir.children.map((child) =>
-            'content' in child && child.name === fileName
-              ? { ...child, content }
-              : child,
+            'content' in child && child.name === fileName ? { ...child, content } : child
           ),
         }
       } else {
@@ -295,7 +280,7 @@ class REPLState {
           children: dir.children.map((child) =>
             'children' in child && child.name === dirName
               ? updateFile(child, pathParts.slice(1))
-              : child,
+              : child
           ),
         }
       }
@@ -310,7 +295,7 @@ class REPLState {
           code: updatedCode,
           updated: new Date().toISOString(),
         },
-      },
+      }
     )
   }
 
@@ -320,7 +305,7 @@ class REPLState {
     if (trimmedName === '') return
     this.store.updateOne(
       { id: { $eq: this.currentReplId } },
-      { $set: { name: trimmedName, updated: new Date().toISOString() } },
+      { $set: { name: trimmedName, updated: new Date().toISOString() } }
     )
   }
 
@@ -347,7 +332,7 @@ class REPLState {
 
     // the service worker reads repls from IndexedDB, so wait for the write to land
     const saved = new Promise<void>((resolve) =>
-      this.store.once('persistence.transmitted', resolve),
+      this.store.once('persistence.transmitted', resolve)
     )
     const id = this.store.insert({
       id: nanoid(),
@@ -400,8 +385,7 @@ class REPLState {
 
   constructor() {
     this.store.isReady().then(async () => {
-      const currentReplId =
-        (await cookieStore.get('currentRepl'))?.value ?? null
+      const currentReplId = (await cookieStore.get('currentRepl'))?.value ?? null
       if (currentReplId !== null) {
         this.currentReplId = currentReplId
       }

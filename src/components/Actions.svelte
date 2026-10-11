@@ -1,29 +1,30 @@
-<script lang="ts">
-import { utoa } from '#lib/encoding.ts'
-import { terminal, repls } from '#lib/state/index.ts'
-
-import RightOutline from '~icons/teenyicons/right-outline'
-import LeftOutline from '~icons/teenyicons/left-outline'
-import MinimiseOutline from '~icons/teenyicons/minimise-outline'
-import ExpandOutline from '~icons/teenyicons/expand-outline'
-
-function shareRepl() {
-  const currentRepl = repls.getCurrentRepl()
-  if (!currentRepl) {
-    console.error('[webrepl:shareCode] no current repl to share')
-    return
-  }
-  const hash = utoa(JSON.stringify(currentRepl.code))
-  const url = new URL(window.location.toString())
-  url.searchParams.set('code', hash)
-  url.searchParams.set('name', currentRepl.name)
-  console.debug('[webrepl:shareCode] share url:', url.toString())
-
-  navigator.clipboard.writeText(url.toString())
-  alert('Link Copied')
-}
-</script>
 <svelte:options runes={true} />
+
+<script lang="ts">
+  import { utoa } from '#lib/encoding.ts'
+  import { terminal, repls } from '#lib/state/index.ts'
+
+  import RightOutline from '~icons/teenyicons/right-outline'
+  import LeftOutline from '~icons/teenyicons/left-outline'
+  import MinimiseOutline from '~icons/teenyicons/minimise-outline'
+  import ExpandOutline from '~icons/teenyicons/expand-outline'
+
+  function shareRepl() {
+    const currentRepl = repls.getCurrentRepl()
+    if (!currentRepl) {
+      console.error('[webrepl:shareCode] no current repl to share')
+      return
+    }
+    const hash = utoa(JSON.stringify(currentRepl.code))
+    const url = new URL(window.location.toString())
+    url.searchParams.set('code', hash)
+    url.searchParams.set('name', currentRepl.name)
+    console.debug('[webrepl:shareCode] share url:', url.toString())
+
+    navigator.clipboard.writeText(url.toString())
+    alert('Link Copied')
+  }
+</script>
 
 <div class="actions">
   <div>
@@ -34,7 +35,7 @@ function shareRepl() {
       aria-pressed={terminal.expanded}
       onclick={() => {
         terminal.expanded = !terminal.expanded
-        setTimeout(()=> {
+        setTimeout(() => {
           terminal.resize()
         }, 250)
       }}
@@ -52,7 +53,7 @@ function shareRepl() {
       aria-pressed={terminal.fullWidth}
       onclick={() => {
         terminal.fullWidth = !terminal.fullWidth
-        setTimeout(()=> {
+        setTimeout(() => {
           terminal.resize()
         }, 250)
       }}
@@ -65,16 +66,10 @@ function shareRepl() {
     </button>
   </div>
   <div>
-
-    <button
-      class="primary"
-      aria-details="copy share link to code repl"
-      onclick={shareRepl}
-    >
+    <button class="primary" aria-details="copy share link to code repl" onclick={shareRepl}>
       Share
     </button>
   </div>
-
 </div>
 
 <style>
@@ -87,13 +82,13 @@ function shareRepl() {
       display: flex;
       align-items: center;
     }
-    
+
     :first-child {
       gap: var(--pad-m);
     }
 
     :last-child {
-      gap: var(--pad-l)
+      gap: var(--pad-l);
     }
   }
 </style>

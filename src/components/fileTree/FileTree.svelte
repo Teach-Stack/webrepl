@@ -1,70 +1,69 @@
 <script lang="ts">
-import { editor, repls } from '#lib/state/index.ts'
+  import { editor, repls } from '#lib/state/index.ts'
 
-import type { Directory } from '#lib/db.ts'
+  import type { Directory } from '#lib/db.ts'
 
-import AddFileDialog from './AddFileDialog.svelte'
-import AddFolderDialog from './AddFolderDialog.svelte'
+  import AddFileDialog from './AddFileDialog.svelte'
+  import AddFolderDialog from './AddFolderDialog.svelte'
 
-import FileIcon from '~icons/ph/file'
-import FileHtml from '~icons/ph/file-html'
-import FileCss from '~icons/ph/file-css'
-import FileJs from '~icons/ph/file-js'
-import FileImage from '~icons/ph/file-image'
-import FilePlus from '~icons/ph/file-plus'
-import FolderIcon from '~icons/ph/folder'
-import FolderOpen from '~icons/ph/folder-open'
-import FolderPlus from '~icons/ph/folder-plus'
+  import FileIcon from '~icons/ph/file'
+  import FileHtml from '~icons/ph/file-html'
+  import FileCss from '~icons/ph/file-css'
+  import FileJs from '~icons/ph/file-js'
+  import FileImage from '~icons/ph/file-image'
+  import FilePlus from '~icons/ph/file-plus'
+  import FolderIcon from '~icons/ph/folder'
+  import FolderOpen from '~icons/ph/folder-open'
+  import FolderPlus from '~icons/ph/folder-plus'
 
-const root = $derived(repls.getCurrentRepl()?.code)
+  const root = $derived(repls.getCurrentRepl()?.code)
 
-let showAddFileDialog = $state(false)
-let showAddFolderDialog = $state(false)
-let dialogDirectory = $state<string[]>([])
+  let showAddFileDialog = $state(false)
+  let showAddFolderDialog = $state(false)
+  let dialogDirectory = $state<string[]>([])
 
-function openAddFileDialog(directory: string[] = []) {
-  dialogDirectory = directory
-  showAddFileDialog = true
-}
+  function openAddFileDialog(directory: string[] = []) {
+    dialogDirectory = directory
+    showAddFileDialog = true
+  }
 
-function openAddFolderDialog(directory: string[] = []) {
-  dialogDirectory = directory
-  showAddFolderDialog = true
-}
+  function openAddFolderDialog(directory: string[] = []) {
+    dialogDirectory = directory
+    showAddFolderDialog = true
+  }
 </script>
-
 
 {#snippet directory(dir: Directory, parent: string[] = [])}
   {@const sortedChildren = dir.children.toSorted((a, b) => {
     // Directories first, then files
     const aIsDir = 'children' in a
     const bIsDir = 'children' in b
-    
+
     if (aIsDir && !bIsDir) return -1
     if (!aIsDir && bIsDir) return 1
-    
+
     // Within same type, sort alphabetically by name
     return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
   })}
   {#each sortedChildren as child}
     {@const key = child.name}
-    {@const state = {expanded: true}}
+    {@const state = { expanded: true }}
     <li
       role="treeitem"
-      aria-selected="{editor.currentFilePath.join('/') === [...parent, key].join('/')}"
-      aria-expanded="{state.expanded}"
-      onclick="{() => {
+      aria-selected={editor.currentFilePath.join('/') === [...parent, key].join('/')}
+      aria-expanded={state.expanded}
+      onclick={() => {
         if ('content' in child) {
           editor.currentFilePath = [...parent, child.name]
         }
-      }}"
-      onkeydown="{(e) => {
+      }}
+      onkeydown={(e) => {
         if (e.key === 'Enter') {
           if ('content' in child) {
             editor.currentFilePath = [...parent, key]
           }
         }
-      }}"
+      }}
     >
       {#if 'content' in child}
         <span class="item">
@@ -126,18 +125,10 @@ function openAddFolderDialog(directory: string[] = []) {
   <div class="files-header">
     <span>Files</span>
     <div class="buttons">
-      <button
-        onclick={() => openAddFileDialog()}
-        title="Add new file"
-        class="sm"
-      >
+      <button onclick={() => openAddFileDialog()} title="Add new file" class="sm">
         <FilePlus />
       </button>
-      <button
-        onclick={() => openAddFolderDialog()}
-        title="Create new folder"
-        class="sm"
-      >
+      <button onclick={() => openAddFolderDialog()} title="Create new folder" class="sm">
         <FolderPlus />
       </button>
     </div>
