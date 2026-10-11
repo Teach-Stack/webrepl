@@ -47,7 +47,6 @@ $effect(() => {
 </svelte:head>
 <Welcome />
 <main
-  class="gap-2 p-2 bg-slate-2 overflow-hidden transition-all"
   class:biggerTerminal={terminal.expanded}
   class:fullWidthTerminal={terminal.fullWidth}
   class:readOnly={editor.readOnly}
@@ -68,6 +67,10 @@ $effect(() => {
 <style>
 main {
   height: 100vh;
+  gap: var(--pad-s);
+  padding: var(--pad-s);
+  background-color: var(--slate-1);
+  overflow: hidden;
   display: grid;
   grid-template-rows: repeat(2, 48px 1fr);
   grid-template-columns: 1fr;
@@ -79,7 +82,7 @@ main {
 }
 
 main.readOnly {
-  grid-template-rows: 48px 64px 1fr 48px 1fr;
+  grid-template-rows: 48px auto 1fr 48px 1fr;
   grid-template-areas:
     "header"
     "banner"
@@ -88,7 +91,7 @@ main.readOnly {
     "output"
 }
 
-@screen xl {
+@media (width >= 1280px) {
   main {
     grid-template-columns: 1.2fr minmax(384px, 0.8fr);
     grid-template-rows: 48px 1fr;

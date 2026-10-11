@@ -1,6 +1,4 @@
 <script lang="ts">
-import Dialog from '../ui/Dialog.svelte'
-import Button from '../ui/Button.svelte'
 
 import { repls } from '#lib/state/index.ts'
 import type { Directory } from '#lib/db.ts'
@@ -74,57 +72,78 @@ $effect(() => {
     folderNameError = ''
   }
 })
+let dialog: HTMLDialogElement
+
+$effect(() => {
+  if (open) dialog.showModal()
+  else dialog.close()
+})
 </script>
 
-<Dialog bind:open>
-  {#snippet title()}
-    <h2 class="text-2xl font-semibold">Create New Folder</h2>
-  {/snippet}
-  
-  {#snippet description()}
-    <p class="text-slate-11">
-      {#if directory.length > 0}
-        Creating folder in: <span class="font-mono text-sm">{directory.join('/')}/</span>
-      {:else}
-        Creating folder in root directory
-      {/if}
-    </p>
-  {/snippet}
-  
-  <div class="space-y-4">
+<dialog bind:this={dialog} onclose={() => (open = false)} closedby="any">
+  <div class="stack">
     <div>
-      <label for="folderName" class="block text-sm font-medium mb-2">
-        Folder Name
-      </label>
+      <h5>Create New Folder</h5>
+      <p>
+        {#if directory.length > 0}
+          Creating folder in: <code>{directory.join('/')}/</code>
+        {:else}
+          Creating folder in root directory
+        {/if}
+      </p>
+    </div>
+
+    <div>
+      <label for="folderName">Folder Name</label>
       <input
         id="folderName"
         type="text"
         bind:value={newFolderName}
         oninput={() => folderNameError = ''}
         placeholder="my-folder"
-        class="w-full px-3 py-2 border-1 border-slate-4 rounded focus:outline-none focus:border-blue-5 font-mono"
+        aria-invalid={folderNameError !== ''}
+        aria-describedby="folderNameHint"
       />
       {#if folderNameError}
-        <p class="text-red-9 text-sm mt-1">{folderNameError}</p>
+        <small>{folderNameError}</small>
       {/if}
-      <p class="text-slate-10 text-xs mt-1">
+      <small id="folderNameHint" class="hint">
         Only letters, numbers, dashes, and underscores allowed
-      </p>
+      </small>
     </div>
-    
-    <div class="flex justify-end gap-2">
-      <Button 
-        variant="default" 
-        onclick={() => open = false}
-      >
+
+    <div class="flex">
+      <button onclick={() => (open = false)}>
         Cancel
-      </Button>
-      <Button 
-        variant="blue" 
-        onclick={addFolder}
-      >
+      </button>
+      <button class="primary" onclick={addFolder}>
         Create Folder
-      </Button>
+      </button>
     </div>
   </div>
-</Dialog>
+</dialog>
+
+<style>
+  dialog {
+    color: var(--slate-9);
+  }
+
+  h5 {
+    margin-bottom: var(--vs-s);
+  }
+
+  input {
+    font-family: monospace;
+  }
+
+  .hint {
+    --fl: -1;
+    display: block;
+    color: var(--slate-9);
+  }
+
+  .flex {
+    justify-content: end;
+    gap: var(--pad-s);
+  }
+</style>

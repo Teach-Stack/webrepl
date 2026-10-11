@@ -6,7 +6,15 @@ import type { Directory } from '#lib/db.ts'
 import AddFileDialog from './AddFileDialog.svelte'
 import AddFolderDialog from './AddFolderDialog.svelte'
 
-import Button from '../ui/Button.svelte'
+import FileIcon from '~icons/ph/file'
+import FileHtml from '~icons/ph/file-html'
+import FileCss from '~icons/ph/file-css'
+import FileJs from '~icons/ph/file-js'
+import FileImage from '~icons/ph/file-image'
+import FilePlus from '~icons/ph/file-plus'
+import FolderIcon from '~icons/ph/folder'
+import FolderOpen from '~icons/ph/folder-open'
+import FolderPlus from '~icons/ph/folder-plus'
 
 const root = $derived(repls.getCurrentRepl()?.code)
 
@@ -43,7 +51,6 @@ function openAddFolderDialog(directory: string[] = []) {
     {@const state = {expanded: true}}
     <li
       role="treeitem"
-      class="select-none aria-[selected='true']:bg-slate-2 aria-[selected='true']:font-medium"
       aria-selected="{editor.currentFilePath.join('/') === [...parent, key].join('/')}"
       aria-expanded="{state.expanded}"
       onclick="{() => {
@@ -60,50 +67,54 @@ function openAddFolderDialog(directory: string[] = []) {
       }}"
     >
       {#if 'content' in child}
-        <span class="flex gap-1 items-center text-xl hover:bg-slate-2 transition-colors w-full cursor-pointer rounded px-1">
+        <span class="item">
           {#if key.endsWith('.html')}
-            <i class="i-ph:file-html"></i>
+            <FileHtml />
           {:else if key.endsWith('.css')}
-            <i class="i-ph:file-css"></i>
+            <FileCss />
           {:else if key.endsWith('.js')}
-            <i class="i-ph:file-js"></i>
+            <FileJs />
           {:else if key.endsWith('.jpg') || key.endsWith('.png') || key.endsWith('.gif') || key.endsWith('.svg')}
-            <i class="i-ph:file-image"></i>
+            <FileImage />
           {:else}
-            <i class="i-ph:file"></i>
+            <FileIcon />
           {/if}
           {key}
         </span>
       {:else}
-        <span class="flex justify-between items-center group hover:bg-slate-2 transition-colors w-full cursor-pointer rounded px-1">
-          <div class="flex gap-1 items-center text-xl">
-            <i class="{state.expanded ? 'i-ph:folder-open' : 'i-ph:folder'}"></i>
+        <span class="item folder">
+          <span class="item">
+            {#if state.expanded}
+              <FolderOpen />
+            {:else}
+              <FolderIcon />
+            {/if}
             {key}
-          </div>
-          <span class="flex gap-1">
+          </span>
+          <span class="folder-actions">
             <button
-              class="opacity-0 group-hover:opacity-100 p-1 hover:bg-slate-3 rounded transition-all"
+              class="unstyled"
               onclick={(e) => {
                 e.stopPropagation()
                 openAddFileDialog([...parent, child.name])
               }}
               title="Add file in this folder"
             >
-              <div class="i-ph:file-plus text-slate-10"></div>
+              <FilePlus />
             </button>
             <button
-              class="opacity-0 group-hover:opacity-100 p-1 hover:bg-slate-3 rounded transition-all"
+              class="unstyled"
               onclick={(e) => {
                 e.stopPropagation()
                 openAddFolderDialog([...parent, child.name])
               }}
               title="Add folder in this folder"
             >
-              <div class="i-ph:folder-plus text-slate-10"></div>
+              <FolderPlus />
             </button>
           </span>
         </span>
-        <ul role="group" class="ml-4">
+        <ul role="group">
           {@render directory(child, [...parent, child.name])}
         </ul>
       {/if}
@@ -111,28 +122,28 @@ function openAddFolderDialog(directory: string[] = []) {
   {/each}
 {/snippet}
 
-<div class="bg-white rounded-lg border-1 border-slate-4 overflow-clip">
-  <div class="px-4 py-2 border-b-1 border-slate-6 font-sans font-medium text-slate-11 bg-slate-1 text-xl flex justify-between items-center">
+<div class="files">
+  <div class="files-header">
     <span>Files</span>
-    <div class="flex gap-1">
-      <Button 
+    <div class="buttons">
+      <button
         onclick={() => openAddFileDialog()}
         title="Add new file"
-        size="sm"
+        class="sm"
       >
-        <div class="i-ph:file-plus"></div>
-      </Button>
-      <Button
+        <FilePlus />
+      </button>
+      <button
         onclick={() => openAddFolderDialog()}
         title="Create new folder"
-        size="sm"
+        class="sm"
       >
-        <div class="i-ph:folder-plus"></div>
-      </Button>
+        <FolderPlus />
+      </button>
     </div>
   </div>
   {#if root}
-    <ul role="tree" class="p-2 space-y-1 max-h-[80vh] overflow-y-auto">
+    <ul role="tree">
       {@render directory(root, [])}
     </ul>
   {/if}
@@ -140,3 +151,115 @@ function openAddFolderDialog(directory: string[] = []) {
 
 <AddFileDialog bind:open={showAddFileDialog} directory={dialogDirectory} />
 <AddFolderDialog bind:open={showAddFolderDialog} directory={dialogDirectory} />
+
+<style>
+  .files {
+    background-color: white;
+    border-radius: var(--br-m);
+    border: 1px solid var(--slate-3);
+    overflow: clip;
+  }
+
+  .files-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--pad-s) var(--pad-l);
+    border-bottom: var(--border-1);
+    border-color: var(--slate-6);
+    background-color: var(--slate-0);
+    color: var(--slate-9);
+    font-size: 1.25rem;
+    font-weight: 500;
+
+    .buttons {
+      display: flex;
+      gap: var(--pad-xs);
+    }
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    padding-inline-start: var(--pad-l);
+  }
+
+  ul[role='tree'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--pad-xs);
+    padding: var(--pad-s);
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+
+  li {
+    --fl: 1;
+    user-select: none;
+
+    &[aria-selected='true'] > .item {
+      background-color: var(--slate-1);
+      font-weight: 500;
+    }
+  }
+
+  .item {
+    display: flex;
+    align-items: center;
+    gap: var(--pad-xs);
+    width: 100%;
+    padding-inline: var(--pad-xs);
+    border-radius: var(--br-s);
+    cursor: pointer;
+    transition: background-color 0.2s var(--ease-smooth);
+
+    &:hover {
+      background-color: var(--slate-1);
+    }
+
+    :global(svg) {
+      flex-shrink: 0;
+    }
+
+    .item {
+      padding: 0;
+      &:hover {
+        background-color: transparent;
+      }
+    }
+  }
+
+  .folder {
+    justify-content: space-between;
+
+    &:hover .folder-actions button {
+      opacity: 1;
+    }
+  }
+
+  .folder-actions {
+    display: flex;
+    gap: var(--pad-xs);
+
+    button {
+      --fl: 0;
+      display: inline-flex;
+      padding: var(--pad-xs);
+      background: none;
+      border: 0;
+      border-radius: var(--br-s);
+      color: var(--slate-9);
+      cursor: pointer;
+      opacity: 0;
+      transition: all 0.2s var(--ease-smooth);
+
+      &:hover {
+        background-color: var(--slate-2);
+      }
+
+      &:focus-visible {
+        opacity: 1;
+      }
+    }
+  }
+</style>

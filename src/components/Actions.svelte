@@ -2,7 +2,10 @@
 import { utoa } from '#lib/encoding.ts'
 import { terminal, repls } from '#lib/state/index.ts'
 
-import Button from './ui/Button.svelte'
+import RightOutline from '~icons/teenyicons/right-outline'
+import LeftOutline from '~icons/teenyicons/left-outline'
+import MinimiseOutline from '~icons/teenyicons/minimise-outline'
+import ExpandOutline from '~icons/teenyicons/expand-outline'
 
 function shareRepl() {
   const currentRepl = repls.getCurrentRepl()
@@ -22,9 +25,9 @@ function shareRepl() {
 </script>
 <svelte:options runes={true} />
 
-<div class="grid-area-[actions] flex items-center justify-center lg:justify-between px-2">
-  <div class="hidden lg:flex gap-2">
-    <Button
+<div class="actions">
+  <div>
+    <button
       title={`${terminal.expanded ? 'Shrink' : 'Expand'} Output`}
       aria-label={`${terminal.expanded ? 'shrink' : 'expand'} code output`}
       aria-details="toggle expanded code output"
@@ -37,12 +40,12 @@ function shareRepl() {
       }}
     >
       {#if terminal.expanded}
-        <div class="i-teenyicons:right-outline size-5.75"></div>
+        <RightOutline />
       {:else}
-        <div class="i-teenyicons:left-outline size-5.75"></div>
+        <LeftOutline />
       {/if}
-    </Button>
-    <Button
+    </button>
+    <button
       title={`${terminal.fullWidth ? 'Exit' : 'Enter'} Full Width Mode`}
       aria-label={`${terminal.fullWidth ? 'exit' : 'enter'} full width terminal mode`}
       aria-details="toggle full width terminal"
@@ -55,20 +58,42 @@ function shareRepl() {
       }}
     >
       {#if terminal.fullWidth}
-        <div class="i-teenyicons:minimise-outline size-5.75"></div>
+        <MinimiseOutline />
       {:else}
-        <div class="i-teenyicons:expand-outline size-5.75"></div>
+        <ExpandOutline />
       {/if}
-    </Button>
+    </button>
   </div>
-  <div class="flex gap-4 items-center">
-    <Button 
-      variant="blue"
+  <div>
+
+    <button
+      class="primary"
       aria-details="copy share link to code repl"
       onclick={shareRepl}
     >
       Share
-    </Button>
+    </button>
   </div>
 
 </div>
+
+<style>
+  .actions {
+    grid-area: actions;
+    display: flex;
+    justify-content: space-between;
+
+    div {
+      display: flex;
+      align-items: center;
+    }
+    
+    :first-child {
+      gap: var(--pad-m);
+    }
+
+    :last-child {
+      gap: var(--pad-l)
+    }
+  }
+</style>

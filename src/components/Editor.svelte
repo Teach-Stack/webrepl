@@ -35,7 +35,7 @@ const language = $derived(() => {
 })
 </script>
 
-<div class="grid  grid-cols-[1fr_3fr] md:grid-cols-[300px_1fr] gap-2 overflow-hidden">
+<div class="editor">
   <FileTree />
   <CodeMirror
     bind:value={editor.value}
@@ -46,7 +46,7 @@ const language = $derived(() => {
     }}
     readonly={editor.readOnly}
     lang={language()}
-    class="rounded-lg overflow-hidden bg-white transition-all border-1 border-slate-4"
+    class="code"
     styles={{
       '&': {
         height: '100%',
@@ -55,3 +55,25 @@ const language = $derived(() => {
     }}
   />
 </div>
+
+<style>
+  .editor {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    gap: var(--pad-s);
+    overflow: hidden;
+  }
+
+  .editor :global(.code) {
+    background-color: white;
+    border-radius: var(--br-m);
+    overflow: hidden;
+    border: 1px solid var(--slate-3);
+  }
+
+  @media (width >= 768px) {
+    .editor {
+      grid-template-columns: 300px 1fr;
+    }
+  }
+</style>

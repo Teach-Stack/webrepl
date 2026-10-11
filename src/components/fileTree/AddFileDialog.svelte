@@ -1,6 +1,4 @@
 <script lang="ts">
-import Dialog from '../ui/Dialog.svelte'
-import Button from '../ui/Button.svelte'
 
 import { repls, editor } from '#lib/state/index.ts'
 import type { Directory } from '#lib/db.ts'
@@ -72,57 +70,78 @@ $effect(() => {
     fileNameError = ''
   }
 })
+let dialog: HTMLDialogElement
+
+$effect(() => {
+  if (open) dialog.showModal()
+  else dialog.close()
+})
 </script>
 
-<Dialog bind:open>
-  {#snippet title()}
-    <h2 class="text-2xl font-semibold">Add New File</h2>
-  {/snippet}
-  
-  {#snippet description()}
-    <p class="text-slate-11">
-      {#if directory.length > 0}
-        Creating file in: <span class="font-mono text-sm">{directory.join('/')}/</span>
-      {:else}
-        Creating file in root directory
-      {/if}
-    </p>
-  {/snippet}
-  
-  <div class="space-y-4">
+<dialog bind:this={dialog} onclose={() => (open = false)} closedby="any">
+  <div class="stack">
     <div>
-      <label for="fileName" class="block text-sm font-medium mb-2">
-        File Name
-      </label>
+      <h5>Add New File</h5>
+      <p>
+        {#if directory.length > 0}
+          Creating file in: <code>{directory.join('/')}/</code>
+        {:else}
+          Creating file in root directory
+        {/if}
+      </p>
+    </div>
+
+    <div>
+      <label for="fileName">File Name</label>
       <input
         id="fileName"
         type="text"
         bind:value={newFileName}
         oninput={() => fileNameError = ''}
         placeholder="example.html"
-        class="w-full px-3 py-2 border-1 border-slate-4 rounded focus:outline-none focus:border-blue-5 font-mono"
+        aria-invalid={fileNameError !== ''}
+        aria-describedby="fileNameHint"
       />
       {#if fileNameError}
-        <p class="text-red-9 text-sm mt-1">{fileNameError}</p>
+        <small>{fileNameError}</small>
       {/if}
-      <p class="text-slate-10 text-xs mt-1">
+      <small id="fileNameHint" class="hint">
         Only letters, numbers, dots, dashes, and underscores allowed
-      </p>
+      </small>
     </div>
-    
-    <div class="flex justify-end gap-2">
-      <Button 
-        variant="default" 
-        onclick={() => open = false}
-      >
+
+    <div class="flex">
+      <button onclick={() => (open = false)}>
         Cancel
-      </Button>
-      <Button 
-        variant="blue" 
-        onclick={addFile}
-      >
+      </button>
+      <button class="primary" onclick={addFile}>
         Create File
-      </Button>
+      </button>
     </div>
   </div>
-</Dialog>
+</dialog>
+
+<style>
+  dialog {
+    color: var(--slate-9);
+  }
+
+  h5 {
+    margin-bottom: var(--vs-s);
+  }
+
+  input {
+    font-family: monospace;
+  }
+
+  .hint {
+    --fl: -1;
+    display: block;
+    color: var(--slate-9);
+  }
+
+  .flex {
+    justify-content: end;
+    gap: var(--pad-s);
+  }
+</style>

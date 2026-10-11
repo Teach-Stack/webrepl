@@ -3,8 +3,7 @@ import { sveltekit } from '@sveltejs/kit/vite'
 
 import { defineConfig } from 'vite'
 
-import extractorSvelte from '@unocss/extractor-svelte'
-import UnoCSS from 'unocss/vite'
+import Icons from 'unplugin-icons/vite'
 
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
@@ -15,10 +14,7 @@ const pkg = JSON.parse(json)
 
 export default defineConfig({
   plugins: [
-    // SvelteKit has no index.html; CSS comes from `virtual:uno.css`, so drop Uno's unused HTML hook
-    UnoCSS({
-      extractors: [extractorSvelte()],
-    }).map((plugin) => ({ ...plugin, transformIndexHtml: undefined })),
+    Icons({ compiler: 'svelte' }),
     sveltekit({
       adapter: adapter({
         fallback: 'index.html',

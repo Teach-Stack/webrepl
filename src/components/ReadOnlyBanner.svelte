@@ -1,6 +1,4 @@
 <script lang="ts">
-import Button from './ui/Button.svelte'
-
 import { goto } from '$app/navigation'
 import { page } from '$app/state'
 
@@ -28,12 +26,19 @@ async function saveAsNew() {
 </script>
 
 {#if editor.readOnly}
-  <div class="grid-area-[banner] bg-gray-50 border-1 border-gray-4 px-2 py-1.5 flex items-center justify-between gap-2 rounded">
-    <p class="text-md text-gray-8 font-sans font-bold">
-      You're viewing a shared REPL (read-only)
-    </p>
-    <Button variant="blue" onclick={saveAsNew}>
+  <div class="primary alert split">
+    <div>
+      <h5>Read Only Mode</h5>
+      <p class="fs-xs">You are viewing a shared REPL, save a copy to make changes</p>
+    </div>
+    <button onclick={saveAsNew}>
       Save
-    </Button>
+    </button>
   </div>
 {/if}
+
+<style>
+  .alert {
+    grid-area: banner;
+  }
+</style>

@@ -17,10 +17,10 @@ jobs:
       - uses: oven-sh/setup-bun@v2
 
       - name: Install Dependencies
-        run: bun install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Build Site
-        run: bun run build
+        run: pnpm run build
 
       - name: Publish to Cloudflare
         id: deploy

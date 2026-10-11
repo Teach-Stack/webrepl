@@ -1,49 +1,54 @@
 <script lang="ts">
-import Dialog from './ui/Dialog.svelte'
-import Button from './ui/Button.svelte'
-
-let open = $state(false)
+let dialog: HTMLDialogElement | undefined
 
 $effect(() => {
-  if (typeof window !== 'undefined') {
+  if (typeof window !== 'undefined' && dialog !== undefined) {
     const dismissed = JSON.parse(
       localStorage.getItem('welcomeDismissed') ?? 'false',
     )
     if (!dismissed) {
-      open = true
+      dialog.showModal()
     }
-  }
-})
-
-$effect(() => {
-  if (!open) {
-    localStorage.setItem('welcomeDismissed', 'true')
   }
 })
 </script>
 
-<Dialog bind:open>
-  <div class="flex flex-col gap-4">
-    <h1 class="text-center text-2xl font-sans text-slate-8">Welcome to WebREPL</h1>
+<dialog bind:this={dialog} onclose={() => localStorage.setItem('welcomeDismissed', 'true')} closedby="any">
+  <div class="stack">
+    <h5>Welcome to WebREPL</h5>
 
-    <p class="text-slate-7 text-base leading-relaxed">
+    <p>
       WebREPL is a web-based HTML/CSS/JS environment that runs entirely in your browser.
     </p>
 
-    <div class="flex flex-col gap-3">
-      <h2 class="text-lg font-sans text-slate-8">Key Features:</h2>
-      <ul class="text-slate-7 text-base leading-relaxed list-disc pl-5 space-y-2">
+    <div class="stack">
+      <h6>Key Features:</h6>
+      <ul>
         <li>Write and execute HTML/CSS/JS code instantly</li>
         <li>Multiple REPL sessions with persistent storage</li>
         <li>Share code snippets via URL</li>
-        <li>No server, no login - Your code stays on your device</li>
+        <li><strong>No server, no login</strong> - Your code stays on your device</li>
       </ul>
     </div>
 
-    <div class="flex justify-end mt-2">
-      <Button variant="blue" onclick={() => open = false}>
+    <div class="flex">
+      <button class="primary" onclick={() => dialog?.close()}>
         Get Started
-      </Button>
+      </button>
     </div>
   </div>
-</Dialog>
+</dialog>
+
+<style>
+  dialog {
+    color: var(--slate-9);
+
+    h5 {
+      text-align: center;
+    }
+
+    .flex:last-child {
+      justify-content: end;
+    }
+  }
+</style>
