@@ -1,6 +1,6 @@
 <script lang="ts">
 import { page } from '$app/state'
-import { repls } from '$lib/state'
+import { repls } from '#lib/state/index.ts'
 
 const MIN_INPUT_WIDTH = 200
 

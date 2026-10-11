@@ -2,7 +2,7 @@
 import Button from './ui/Button.svelte'
 import Switcher from './header/Switcher.svelte'
 import Name from './header/Name.svelte'
-import { editor } from '$lib/state'
+import { editor } from '#lib/state/index.ts'
 import { page } from '$app/state'
 
 let sharedName = $derived(page.url.searchParams.get('name'))

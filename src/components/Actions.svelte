@@ -1,6 +1,6 @@
 <script lang="ts">
-import { utoa } from '$lib/encoding'
-import { terminal, repls } from '$lib/state'
+import { utoa } from '#lib/encoding.ts'
+import { terminal, repls } from '#lib/state/index.ts'
 
 import Button from './ui/Button.svelte'
 

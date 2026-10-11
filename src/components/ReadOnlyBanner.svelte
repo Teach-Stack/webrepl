@@ -4,8 +4,8 @@ import Button from './ui/Button.svelte'
 import { goto } from '$app/navigation'
 import { page } from '$app/state'
 
-import { repls, editor } from '$lib/state'
-import { atou } from '$lib/encoding'
+import { repls, editor } from '#lib/state/index.ts'
+import { atou } from '#lib/encoding.ts'
 
 let sharedName = $derived(page.url.searchParams.get('name'))
 

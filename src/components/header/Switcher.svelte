@@ -1,7 +1,7 @@
 <script lang="ts">
 import Dialog from '../ui/Dialog.svelte'
 import Button from '../ui/Button.svelte'
-import { repls } from '$lib/state'
+import { repls } from '#lib/state/index.ts'
 
 let open = $state(false)
 

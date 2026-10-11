@@ -6,8 +6,8 @@ import ReadOnlyBanner from '../components/ReadOnlyBanner.svelte'
 import Welcome from '../components/Welcome.svelte'
 import Preview from '../components/Preview.svelte'
 
-import { repls, terminal, editor, preview } from '$lib/state'
-import { atou } from '$lib/encoding'
+import { repls, terminal, editor, preview } from '#lib/state/index.ts'
+import { atou } from '#lib/encoding.ts'
 
 import { page } from '$app/state'
 

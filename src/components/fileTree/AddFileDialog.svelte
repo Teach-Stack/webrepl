@@ -2,8 +2,8 @@
 import Dialog from '../ui/Dialog.svelte'
 import Button from '../ui/Button.svelte'
 
-import { repls, editor } from '$lib/state'
-import type { Directory } from '$lib/db.svelte'
+import { repls, editor } from '#lib/state/index.ts'
+import type { Directory } from '#lib/db.ts'
 
 type Props = {
   open: boolean

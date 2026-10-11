@@ -1,5 +1,5 @@
-import type { Directory, REPL } from '$lib/db'
-import { REPLCollection } from '$lib/db.svelte'
+import type { Directory, REPL } from '#lib/db.ts'
+import { REPLCollection } from '#lib/db.svelte.ts'
 
 import { nanoid } from 'nanoid'
 

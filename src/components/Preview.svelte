@@ -1,7 +1,7 @@
 <script lang="ts">
 import Button from './ui/Button.svelte'
 
-import { preview } from '$lib/state'
+import { preview } from '#lib/state/index.ts'
 
 let inputUrl = $state(preview.url)
 

@@ -1,7 +1,7 @@
 <script lang="ts">
-import { editor, repls } from '$lib/state'
+import { editor, repls } from '#lib/state/index.ts'
 
-import type { Directory } from '$lib/db.svelte'
+import type { Directory } from '#lib/db.ts'
 
 import AddFileDialog from './AddFileDialog.svelte'
 import AddFolderDialog from './AddFolderDialog.svelte'

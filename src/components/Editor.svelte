@@ -4,7 +4,7 @@ import { javascript } from '@codemirror/lang-javascript'
 import { css } from '@codemirror/lang-css'
 import { html } from '@codemirror/lang-html'
 
-import { editor, repls, preview } from '$lib/state'
+import { editor, repls, preview } from '#lib/state/index.ts'
 
 import FileTree from './fileTree/FileTree.svelte'
 
