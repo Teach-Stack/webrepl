@@ -1,11 +1,3 @@
-// Disables access to DOM typings like `HTMLElement` which are not available
-// inside a service worker and instantiates the correct globals
-/// <reference no-default-lib="true"/>
-/// <reference lib="esnext" />
-/// <reference types="@types/serviceworker" />
-
-/// <reference types="@sveltejs/kit" />
-
 import mime from 'mime'
 
 import { type REPL, REPLCollection, type Directory } from '../lib/db'

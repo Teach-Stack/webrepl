@@ -230,9 +230,6 @@ importers:
       '@types/node':
         specifier: ^24.19.2
         version: 24.19.2
-      '@types/serviceworker':
-        specifier: ^0.0.203
-        version: 0.0.203
       oxfmt:
         specifier: ^0.72.0
         version: 0.72.0(svelte@5.57.2)
@@ -1159,9 +1156,6 @@ packages:
 
   '@types/node@24.19.2':
     resolution: {integrity: sha512-93d49wCWJkCyN87MxLpNN6KXPCwFw7bVUg79mGUV1OS40JGWwVCr8n61DXCSqz7CV6/VfPkb7xec7uP2M+QHWQ==}
-
-  '@types/serviceworker@0.0.203':
-    resolution: {integrity: sha512-7AOQ77H9pWdHeYnS8iucDm4RJmSNMDuFOX+UYZ9W1WAHHyy2dO9ni/CYQboz/IMr/wDucxSMT1ed90bT++75KA==}
 
   '@xterm/addon-attach@0.12.0':
     resolution: {integrity: sha512-1lxvXM4JYSm60lbFmE8WMOy2oF2ip3Ye8jWorSAmwy7x8FiC53netEJ5RguL8+FSRj79MUQsNCb2hprY2QA2ig==}
@@ -2374,8 +2368,6 @@ snapshots:
   '@types/node@24.19.2':
     dependencies:
       undici-types: 7.24.6
-
-  '@types/serviceworker@0.0.203': {}
 
   '@xterm/addon-attach@0.12.0': {}
 
