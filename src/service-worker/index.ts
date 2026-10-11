@@ -14,10 +14,10 @@ self.addEventListener('install', () => {
   self.skipWaiting()
 })
 
-self.addEventListener('activate', () => {
+self.addEventListener('activate', (event: ExtendableEvent) => {
   console.debug('[webrepl:sw] Service worker activating...')
-  console.debug('[webrepl:sw] Skipping waiting...')
-  self.skipWaiting()
+  // take control of already-open pages so the preview works on first load
+  event.waitUntil(self.clients.claim())
 })
 
 self.addEventListener('fetch', (event: FetchEvent) => {

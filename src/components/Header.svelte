@@ -60,7 +60,7 @@ let sharedName = $derived(page.url.searchParams.get('name'))
     }
 
     /* library sets svg max-width: 100%, so a squeezed button would shrink its icon */
-    button, .btn {
+    > div:first-child > :global(button), .btn {
       flex-shrink: 0;
     }
 

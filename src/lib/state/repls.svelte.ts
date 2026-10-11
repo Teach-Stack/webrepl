@@ -31,9 +31,10 @@ class REPLState {
 
   readOnlyRepl: ReadOnlyREPL | null = $state(null)
 
-  setCurrentId(id: string) {
+  async setCurrentId(id: string) {
+    // the service worker reads this cookie, so set it before the preview can react
+    await cookieStore.set('currentRepl', id)
     this.currentReplId = id
-    cookieStore.set('currentRepl', id)
     // localStorage.setItem('currentRepl', id)
   }
 
@@ -344,7 +345,11 @@ class REPLState {
       }
     }
 
-    return await this.store.insert({
+    // the service worker reads repls from IndexedDB, so wait for the write to land
+    const saved = new Promise<void>((resolve) =>
+      this.store.once('persistence.transmitted', resolve),
+    )
+    const id = this.store.insert({
       id: nanoid(),
       name: finalName,
       code: {
@@ -363,6 +368,8 @@ class REPLState {
       created: new Date().toISOString(),
       updated: new Date().toISOString(),
     })
+    await saved
+    return id
   }
 
   findId(): string | undefined {
@@ -405,7 +412,7 @@ class REPLState {
       if (count === 0) {
         const id = await this.create()
 
-        this.setCurrentId(id)
+        await this.setCurrentId(id)
       } else {
         const repl = this.store.findOne({
           id: { $eq: this.currentReplId ?? '' },
@@ -417,7 +424,7 @@ class REPLState {
             throw new Error('Somehow no REPL found?!')
           }
 
-          this.setCurrentId(id)
+          await this.setCurrentId(id)
         }
       }
     })

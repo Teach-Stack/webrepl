@@ -35,8 +35,25 @@ $effect(() => {
     cookieStore.delete('sharedRepl')
     repls.setReadOnlyRepl(null)
   }
+})
 
-  preview.ready = true
+// the preview iframe is served by the service worker, so wait until it controls this page
+let swReady = $state(false)
+$effect(() => {
+  const sw = navigator.serviceWorker
+  if (sw.controller) {
+    swReady = true
+    return
+  }
+  const onControl = () => (swReady = true)
+  sw.addEventListener('controllerchange', onControl, { once: true })
+  return () => sw.removeEventListener('controllerchange', onControl)
+})
+
+// ...and until it has a repl to serve
+$effect(() => {
+  preview.ready =
+    swReady && (sharedRepl !== null || repls.currentReplId !== null)
 })
 </script>
 

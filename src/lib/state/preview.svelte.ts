@@ -22,11 +22,11 @@ class PreviewState {
   }
 
   updateURL() {
-    if (this.element?.contentWindow) {
-      this.url = this.element.contentWindow.location.pathname.replace(
-        '/preview',
-        '',
-      )
+    try {
+      const path = this.element?.contentWindow?.location.pathname
+      if (path) this.url = path.replace('/preview', '')
+    } catch {
+      // iframe navigated cross-origin (or to a browser error page); keep the last url
     }
   }
 }
