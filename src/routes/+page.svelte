@@ -12,15 +12,19 @@ import { atou } from '#lib/encoding.ts'
 import { page } from '$app/state'
 
 let sharedRepl = $derived(page.url.searchParams.get('code'))
+// the sharedRepl value whose cookie the service worker can already see
+let cookieSyncedFor = $state<string | null>()
 
 $effect(() => {
+  const current = sharedRepl
+  let cookieSync: Promise<void> = Promise.resolve()
   if (sharedRepl !== null) {
     try {
       const decoded = atou(sharedRepl)
       console.debug('[webrepl:page] loading shared code:', decoded)
       const codeObj = JSON.parse(decoded)
       console.debug('[webrepl:page] parsed shared code object:', codeObj)
-      cookieStore.set('sharedRepl', sharedRepl)
+      cookieSync = cookieStore.set('sharedRepl', sharedRepl)
       repls.setReadOnlyRepl({
         name: page.url.searchParams.get('name') || 'Untitled',
         code: codeObj,
@@ -32,9 +36,10 @@ $effect(() => {
   } else {
     console.debug('[webrepl:page] no shared code found in URL')
     console.debug('[webrepl:page] clearing shared repl state')
-    cookieStore.delete('sharedRepl')
+    cookieSync = cookieStore.delete('sharedRepl')
     repls.setReadOnlyRepl(null)
   }
+  cookieSync.then(() => (cookieSyncedFor = current))
 })
 
 // the preview iframe is served by the service worker, so wait until it controls this page
@@ -53,7 +58,9 @@ $effect(() => {
 // ...and until it has a repl to serve
 $effect(() => {
   preview.ready =
-    swReady && (sharedRepl !== null || repls.currentReplId !== null)
+    swReady &&
+    cookieSyncedFor === sharedRepl &&
+    (sharedRepl !== null || repls.currentReplId !== null)
 })
 </script>
 
@@ -138,7 +145,7 @@ main.readOnly {
   main.fullWidthTerminal.readOnly {
     grid-template-areas:
       "header actions"
-      "banner"
+      "banner banner"
       "output output";
   }
 }

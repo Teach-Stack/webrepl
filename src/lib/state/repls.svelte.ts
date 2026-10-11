@@ -352,7 +352,7 @@ class REPLState {
     const id = this.store.insert({
       id: nanoid(),
       name: finalName,
-      code: {
+      code: value.code ?? {
         name: 'root',
         children: [
           {

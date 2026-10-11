@@ -19,7 +19,7 @@ async function saveAsNew() {
     name: sharedName ?? 'Untitled',
     code: codeObj,
   })
-  repls.setCurrentId(id)
+  await repls.setCurrentId(id)
   editor.readOnly = false
   goto('/')
 }
